@@ -11,11 +11,15 @@ from argparse import ArgumentParser
 def execute():
     parser = ArgumentParser(add_help=False)
     parser.add_argument('--tui', action='store_true', default=False, help='start Fuzzinator with TUI')
+    parser.add_argument('--wui', action='store_true', default=False, help='start Fuzzinator with WUI')
 
     args, more_args = parser.parse_known_args()
 
     if args.tui:
         from .ui.tui import execute
+        execute(args=more_args, parser=parser)
+    elif args.wui:
+        from .ui.wui import execute
         execute(args=more_args, parser=parser)
     else:
         from .ui.cli import execute
