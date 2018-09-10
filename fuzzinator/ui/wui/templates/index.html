@@ -1,13 +1,20 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Fuzzinator wui</title>
-  </head>
-  <body>
-    <table>
-       {% for item in issues %}
-         <tr><td><a href="/issue/{{ item['_id'] }}">{{ item['id'] }}</a></td></tr>
-       {% end %}
-    </table>
-  </body>
-</html>
+{% extends "base.html" %}
+{% block body %}
+  <div class="fluid-container">
+    <div class="container">
+      <h4><b>Issue ID</b></h4>
+      <div class="list-group">
+        {% for item in issues %}
+          <a href="/issue/{{ item['_id'] }}" class="list-group-item list-group-item-action">
+            <div>
+              <span class="issue_id">{{ item['id'] }}</span>
+              <span class="issue_reported">{{ item['reported'] }}</span>
+              <span class="issue_seen">{{ item['first_seen'] }}</span>
+              <span class="issue_count">{{ item['count'] }}</span>
+            </div>
+          </a>
+        {% end %}
+      </div>
+    </div>
+  </div>
+{% end body %}

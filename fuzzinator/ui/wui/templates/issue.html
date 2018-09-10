@@ -7,3 +7,12 @@
     {{ issue['id'] }}
   </body>
 </html>
+{% extends "base.html" %}
+{% block title %} Issue {% end title %}
+{% block body %}
+      <div class="list-group">
+          <li class="list-group-item">{{ issue['_id'] }}</li>
+          <li class="list-group-item">{{ issue['id'] }}</li>
+          <li class="list-group-item">{{ issue['sut'] }}</li>
+      </div>
+{% end body %}
