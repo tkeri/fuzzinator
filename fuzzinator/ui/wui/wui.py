@@ -22,6 +22,24 @@ from .wui_listener import WuiListener
 define('port', default=8080, help='Run on the given port.', type=int)
 
 
+class SocketHandler(websocket.WebSocketHandler):
+    def __init__(self, *args, **kwargs):
+        self.controller = kwargs.pop('controller')
+        super(SocketHandler, self).__init__(*args, **kwargs)
+
+    def check_origin(self, origin):
+        return True
+
+    def open(self):
+        print("WebSocket opened")
+
+    def on_message(self, message):
+        self.write_message(u"You said: " + message)
+
+    def on_close(self):
+        print("WebSocket closed")
+
+
 class IssueHandler(web.RequestHandler):
     def __init__(self, *args, **kwargs):
         self.db = kwargs.pop('db')
@@ -50,6 +68,7 @@ class Wui(object):
         self.app = web.Application([
                     (r'/', IndexHandler, dict(db=controller.db)),
                     (r'/issue/([0-9a-f]{24})', IssueHandler, dict(db=controller.db)),
+                    (r'/websocket', SocketHandler, dict(controller=controller))
                 ], **settings)
         self.app.listen(options.port)
 
