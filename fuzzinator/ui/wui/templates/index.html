@@ -1,16 +1,23 @@
 {% extends "base.html" %}
 {% block body %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm head_id">Issue ID</div>
+    <div class="col-sm head_reported">Reported</div>
+    <div class="col-sm head_seen">First seen</div>
+    <div class="col-sm head_count">Count</div>
+  </div>
+</div>
   <div class="fluid-container">
     <div class="container">
-      <h4><b>Issue ID</b></h4>
       <div class="list-group">
         {% for item in issues %}
           <a href="/issue/{{ item['_id'] }}" class="list-group-item list-group-item-action">
-            <div>
-              <span class="issue_id">{{ item['id'] }}</span>
-              <span class="issue_reported">{{ item['reported'] }}</span>
-              <span class="issue_seen">{{ item['first_seen'] }}</span>
-              <span class="issue_count">{{ item['count'] }}</span>
+            <div class="row">
+              <div class="col-sm issue_id">{{ item['id'] }}</div>
+              <div class="col-sm issue_reported">{{ item['reported'] }}</div>
+              <div class="col-sm issue_seen">{{ item['first_seen'] }}</div>
+              <div class="col-sm issue_count">{{ item['count'] }}</div>
             </div>
           </a>
         {% end %}

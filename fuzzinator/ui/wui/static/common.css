@@ -1,9 +1,11 @@
+/* index.html */
 .issue_id {
   display: inline-block;
   width: 350px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  text-align: center;
 }
 
 .issue_reported {
@@ -12,6 +14,7 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  text-align: center;
 }
 
 .issue_seen {
@@ -19,6 +22,7 @@
   width: 170px;
   overflow: hidden;
   white-space: nowrap;
+  text-align: center;
 }
 
 .issue_count {
@@ -27,4 +31,49 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  text-align: center;
+}
+
+.head_id {
+  display: block;
+  font-size: 1.7em;
+  margin-top: 1.33em;
+  margin-bottom: 1.33em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+  text-align: center;
+}
+
+.head_reported {
+  display: block;
+  font-size: 1.7em;
+  margin-top: 1.33em;
+  margin-bottom: 1.33em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+  text-align: center;
+}
+
+.head_seen {
+  display: block;
+  font-size: 1.7em;
+  margin-top: 1.33em;
+  margin-bottom: 1.33em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+  text-align: center;
+}
+
+.head_count {
+  display: block;
+  font-size: 1.7em;
+  margin-top: 1.33em;
+  margin-bottom: 1.33em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+  text-align: center;
 }
