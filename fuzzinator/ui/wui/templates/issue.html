@@ -13,6 +13,8 @@
       <div class="list-group">
         <li class="list-group-item">{{ issue['_id'] }}</li>
         <li class="list-group-item">{{ issue['id'] }}</li>
+        {% if 'sut' in issue %}
         <li class="list-group-item">{{ issue['sut'] }}</li>
+        {% end %}
       </div>
 {% end body %}
