@@ -122,6 +122,7 @@ def execute(args=None, parser=None):
     parser = build_parser(parent=parser)
     arguments = parser.parse_args(args)
     process_args(arguments)
+    #print(arguments.config['fuzzinator.wui']['template_dir'])
 
     settings = dict(
         template_path = os.path.join(os.path.dirname(__file__), 'templates'),

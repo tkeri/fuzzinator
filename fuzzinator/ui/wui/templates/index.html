@@ -1,27 +1,57 @@
 {% extends "base.html" %}
 {% block body %}
 <div class="container">
-  <ul class="list-group">
-    <li class="list-group-item"><h4>Exec stats:</h4></li>
-  </ul>
-  <ul id="stats_body" class="list-group">
-    <!-- stats body -->
-  </ul>
-</div>
-<button type="button" onclick="newEcho()">Kuflik</button>
-<hr>
-<div class="container">
-  <div class="row">
-    <div class="col-sm head_id">Issue ID</div>
-    <div class="col-sm head_reported">Reported</div>
-    <div class="col-sm head_seen">First seen</div>
-    <div class="col-sm head_count">Count</div>
+  <div class="jumbotron">
+    <h1>Fuzzinator</h1>
+    <p>Fuzzinator: Random Testing Framework - <a href="https://github.com/renatahodovan/fuzzinator">https://github.com/renatahodovan/fuzzinator</a></p>
   </div>
 </div>
-<div class="fluid-container">
-  <div class="container">
-    <div id="issues_body" class="list-group">
-      <!-- issues body -->
+<div class="container">
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" data-toggle="tab" href="#menu_issues">Issues</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#menu_stats">Stats</a>
+    </li>
+  </ul>
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <!-- Issues -->
+    <div id="menu_issues" class="tab-pane active">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm head_id">Issue ID</div>
+          <div class="col-sm head_reported">Reported</div>
+          <div class="col-sm head_seen">First seen</div>
+          <div class="col-sm head_count">Count</div>
+        </div>
+      </div>
+      <div class="fluid-container">
+        <div class="container">
+          <div id="issues_body" class="list-group">
+          <!-- issue body -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Stats -->
+     <div class="container">
+      <div class="row">
+        <div class="col-sm head_id">Fuzzer</div>
+        <div class="col-sm head_reported">Exec</div>
+        <div class="col-sm head_seen">Issues</div>
+        <div class="col-sm head_count">Unique</div>
+      </div>
+    </div>
+    <div id="menu_stats" class="tab-pane fade">
+      <div class="container">
+        <ul id="stats_body" class="list-group">
+          <!-- stats body -->
+        </ul>
+      </div>
+    </div>
     </div>
   </div>
 </div>
