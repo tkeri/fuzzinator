@@ -1,5 +1,16 @@
 /* index.html */
 .issue_id {
+  font-size: 16px;
+  display: inline-block;
+  width: 350px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.issue_fuzzer {
+  font-size: 16px;
   display: inline-block;
   width: 350px;
   overflow: hidden;
@@ -9,6 +20,7 @@
 }
 
 .issue_reported {
+  font-size: 16px;
   display: inline-block;
   width: 50px;
   overflow: hidden;
@@ -18,6 +30,7 @@
 }
 
 .issue_seen {
+  font-size: 16px;
   display: inline-block;
   width: 170px;
   overflow: hidden;
@@ -26,6 +39,7 @@
 }
 
 .issue_count {
+  font-size: 16px;
   display: inline-block;
   width: 30px;
   overflow: hidden;
@@ -36,9 +50,20 @@
 
 .head_id {
   display: block;
-  font-size: 1.7em;
-  margin-top: 1.33em;
-  margin-bottom: 1.33em;
+  font-size: 24px;
+  margin-top: 60px;
+  margin-bottom: 0px;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+  text-align: center;
+}
+
+.head_fuzzer {
+  display: block;
+  font-size: 24px;
+  margin-top: 60px;
+  margin-bottom: 0px;
   margin-left: 0;
   margin-right: 0;
   font-weight: bold;
@@ -47,9 +72,9 @@
 
 .head_reported {
   display: block;
-  font-size: 1.7em;
-  margin-top: 1.33em;
-  margin-bottom: 1.33em;
+  font-size: 24px;
+  margin-top: 60px;
+  margin-bottom: 0px;
   margin-left: 0;
   margin-right: 0;
   font-weight: bold;
@@ -58,9 +83,9 @@
 
 .head_seen {
   display: block;
-  font-size: 1.7em;
-  margin-top: 1.33em;
-  margin-bottom: 1.33em;
+  font-size: 24px;
+  margin-top: 60px;
+  margin-bottom: 0px;
   margin-left: 0;
   margin-right: 0;
   font-weight: bold;
@@ -69,13 +94,21 @@
 
 .head_count {
   display: block;
-  font-size: 1.7em;
-  margin-top: 1.33em;
-  margin-bottom: 1.33em;
+  font-size: 24px;
+  margin-top: 60px;
+  margin-bottom: 0px;
   margin-left: 0;
   margin-right: 0;
   font-weight: bold;
   text-align: center;
 }
 
-/* issue.html */
+#bug_we_trust {
+  font-size: 14px;
+  vertical-align: bottom;
+}
+
+#fuzzinator {
+  line-height: 5;
+}
+

@@ -9,7 +9,7 @@ import json
 import signal
 
 
-from multiprocessing import Process
+from multiprocessing import Lock, Process, Queue
 # TODO: HACK
 from bson.objectid import ObjectId
 
@@ -21,6 +21,7 @@ from tornado.options import define, options
 from fuzzinator import Controller
 from fuzzinator.ui import build_parser, process_args
 from .wui_listener import WuiListener
+from fuzzinator.listener import EventListener
 
 
 # TODO: move to fuzzinator
@@ -36,10 +37,13 @@ class ObjectIdEncoder(json.JSONEncoder):
             return (datetime.datetime.min + obj).time().isoformat()
         elif isinstance(obj, ObjectId):
             return str(obj)
+        elif isinstance(obj, bytes):
+            return str(obj)
         return json.JSONEncoder.default(self, obj)
 
 class SocketHandler(websocket.WebSocketHandler):
     def __init__(self, *args, **kwargs):
+        self.wui = kwargs.pop('wui')
         self.controller = kwargs.pop('controller')
         super(SocketHandler, self).__init__(*args, **kwargs)
 
@@ -47,6 +51,7 @@ class SocketHandler(websocket.WebSocketHandler):
         return True
 
     def open(self):
+        self.wui.registerWs(self)
         print("WebSocket opened")
 
     def on_message(self, message):
@@ -69,6 +74,7 @@ class SocketHandler(websocket.WebSocketHandler):
             print('ERROR: Invalid {action} message!'.format(action=action))
 
     def on_close(self):
+        self.wui.unregisterWs(self)
         print("WebSocket closed")
 
     def send_message(self, action, data):
@@ -104,19 +110,51 @@ class IndexHandler(web.RequestHandler):
         self.render('index.html')
 
 
-class Wui(object):
+class Wui(EventListener):
 
     def __init__(self, controller, settings):
+        self.events = Queue()
+        self.lock = Lock()
+        controller.listener += self
         self.app = web.Application([
                     (r'/', IndexHandler, dict(db=controller.db)),
                     (r'/issue/([0-9a-f]{24})', IssueHandler, dict(db=controller.db)),
-                    (r'/websocket', SocketHandler, dict(controller=controller))
+                    (r'/websocket', SocketHandler, dict(controller=controller, wui=self))
                 ], **settings)
         self.app.listen(options.port)
+        self.socket_list = []
 
-    def new_fuzz_job(self, ident, fuzzer):
-        pass
+    def registerWs(self, wsSocket):
+        print('registerWs')
+        self.socket_list.append(wsSocket)
 
+    def unregisterWs(self, wsSocket):
+        print('unregisterWs')
+        self.socket_list.append(wsSocket)
+
+    def send_message(self, action, data):
+        print(self.socket_list)
+        for wsSocket in self.socket_list:
+            print('send_message')
+            wsSocket.send_message(action, data)
+
+    def new_fuzz_job(self, ident, fuzzer, sut, cost, batch):
+        self.send_message('new_fuzz_job', ident)
+
+    def new_issue(self, issue):
+        print('new_message')
+        self.send_message('new_issue', issue)
+
+    def process_loop(self):
+        print(self.events.qsize())
+        while True:
+            try:
+                event = self.events.get_nowait()
+                if hasattr(self, event['fn']):
+                    getattr(self, event['fn'])(**event['kwargs'])
+            except:
+                break
+        print('process_loop')
 
 def execute(args=None, parser=None):
     parser = build_parser(parent=parser)
@@ -132,12 +170,15 @@ def execute(args=None, parser=None):
 
     controller = Controller(config=arguments.config)
     wui = Wui(controller, settings)
-    controller.listener += WuiListener()
+    controller.listener += WuiListener(wui.events, wui.lock)
     fuzz_process = Process(target=controller.run, args=())
 
     iol = ioloop.IOLoop.instance()
+    iolcb =ioloop.PeriodicCallback(wui.process_loop, 1000)
 
     try:
+        fuzz_process.start()
+        iolcb.start()
         iol.start()
     except KeyboardInterrupt:
         pass
