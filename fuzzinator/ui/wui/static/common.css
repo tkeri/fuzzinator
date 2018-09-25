@@ -108,7 +108,16 @@
   vertical-align: bottom;
 }
 
-#fuzzinator {
-  line-height: 5;
+/* base.html */
+.footer {
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   background-color: #e9ecef;
+   color: black;
+   text-align: center;
+   font-size: 15px;
+   padding: 12px;
+   margin-top: 28px;
 }
 
