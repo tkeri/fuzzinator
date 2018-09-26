@@ -13,10 +13,10 @@
           <li class="list-group-item"><b>sut: </b>{{ issue['sut'] }}</li>
         {% end %}
         {% if 'reduced' in issue %}
-          <li class="list-group-item"><b>reduced: </b>{{ issue['reduced'] }}</li>
+          <li class="list-group-item"><b>reduced: </b>{% if not issue['reduced'] is None %} <i class="far fa-check-circle"></i> {% else %} <i class="far fa-times-circle"></i> {% end %} </li>
         {% end %}
         {% if 'reported' in issue %}
-          <li class="list-group-item"><b>reported: </b>{{ issue['reported'] }}</li>
+          <li class="list-group-item"><b>reported: </b>{% if issue['reported'] %} <i class="far fa-check-circle"></i> {% else %} <i class="far fa-times-circle"></i> {% end %} </li>
         {% end %}
         {% if 'first_seen' in issue %}
           <li class="list-group-item"><b>first_seen: </b>{{ issue['first_seen'] }}</li>

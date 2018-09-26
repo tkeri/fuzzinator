@@ -1,7 +1,7 @@
 var ws;
 var jobsDict = {};
 function startWebsocket() {
-    ws = new WebSocket("ws://10.6.11.69:8080/websocket");
+    ws = new WebSocket("ws://localhost:8080/websocket");
     ws.onopen = function () {
         updateContent();
     };
@@ -25,8 +25,12 @@ function startWebsocket() {
                 $("#stats_body").html(stats_content);
                 break;
             case "set_issues":
+                reduced_icon = "";
+                reported_icon = "";
                 var issues_content = "";
                 Object.keys(data).forEach(function(k){
+                    reported_icon = setRightIcon(data[k].reported);
+                    reduced_icon = setRightIcon(data[k].reduced);
                     issues_content += '\
                             <a href="/issue/' + data[k]._id + '" class="list-group-item list-group-item-action">\
                             <div class="row">\
@@ -34,8 +38,8 @@ function startWebsocket() {
                             <div class="col-sm issue_fuzzer" data-togle="tool-tip" title="' + data[k].fuzzer + '">' + data[k].fuzzer + '</div>\
                             <div class="col-sm issue_seen">' + data[k].first_seen + '</div>\
                             <div class="col-sm issue_count">' + data[k].count + '</div>\
-                            <div class="col-sm issue_reported">' + data[k].reduced + '</div>\
-                            <div class="col-sm issue_reported">' + data[k].reported + '</div>\
+                            <div class="col-sm issue_reported">' + reduced_icon  + '</div>\
+                            <div class="col-sm issue_reported">' + reported_icon  + '</div>\
                             </div>\
                             </a>';
                 });
@@ -47,10 +51,10 @@ function startWebsocket() {
                 jobsDict[jsonData.ident] = jsonData.batch;
                 console.log('new fuzz: ' + JSON.parse(data));
                 job_content += '\
-                <table class="table">\
+                <table class="table table-bordered">\
                     <thead> \
                        <tr> \
-                          <th align="center">Fuzz Job</th>\
+                          <th colspan="2" align="center">Fuzz Job</th>\
                         </tr>\
                     </thead>\
                     <tbody>\
@@ -130,6 +134,14 @@ function createContentFromJson(json_o, tag_id) {
     var html = iterateAttributesAndFormHTMLLabels(json_o);
     $("#" + tag_id).html(html);
 }
+
+function setRightIcon(data) {
+    if (data === null || data === false) {
+        return '<i class="far fa-times-circle"></i>';
+    }
+
+    return '<i class="far fa-check-circle"></i>';
+};
 
 startWebsocket();
 var content_update =  setInterval(updateContent, 4000);

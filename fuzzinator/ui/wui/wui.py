@@ -63,13 +63,13 @@ class SocketHandler(websocket.WebSocketHandler):
 
             self.send_message('set_stats', stats)
 #TEST PRINT:
-            print('WS SEND: set_stats')
+            #print('WS SEND: set_stats')
         elif action == 'get_issues':
             issues = self.controller.db.all_issues()
 
             self.send_message('set_issues', issues)
 #TEST PRINT:
-            print('WS SEND: set_issues')
+            #print('WS SEND: set_issues')
         else:
             print('ERROR: Invalid {action} message!'.format(action=action))
 
@@ -126,11 +126,11 @@ class Wui(EventListener):
         self.socket_list = []
 
     def registerWs(self, wsSocket):
-        print('registerWs')
+        #print('registerWs')
         self.socket_list.append(wsSocket)
 
     def unregisterWs(self, wsSocket):
-        print('unregisterWs')
+        #print('unregisterWs')
         self.socket_list.remove(wsSocket)
 
     def send_message(self, action, data):
@@ -139,11 +139,12 @@ class Wui(EventListener):
 
     def new_fuzz_job(self, ident, fuzzer, sut, cost, batch):
         data = json.dumps(dict(ident=ident, fuzzer=fuzzer, sut=sut, cost=cost, batch=batch))
-        print('WS SEND: new_fuzz_job')
+        print('WS SEND: new_fuzz_job: {ident}'.format(ident=ident))
         self.send_message('new_fuzz_job', data)
 
     def job_progress(self, ident, progress):
         data = json.dumps(dict(ident=ident, progress=progress))
+        print('WS SEND: update progress: {ident}'.format(ident=ident))
         self.send_message('job_progress', data)
 
     # TODO: use with websocket
