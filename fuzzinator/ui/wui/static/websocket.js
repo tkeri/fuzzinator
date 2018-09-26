@@ -64,28 +64,26 @@ function updateContent() {
         console.log(request.action);
 };
 
-function iterateAttributesAndFormHTMLLabels(json_o){
+function iterateAttributesAndFormHTMLLabels(json_o, count=0){
     var s = "";
-    Object.keys(json_o).forEach(function(k){
+
+    it.forEach(function(k){
         if (typeof json_o[k] == 'object'){
             s+='<label><font color=green>' + k + '</font></label><br />';
-            s+=iterateAttributesAndFormHTMLLabels(json_o[k]);
+            if (json_o[k] === null) {
+                return;
+            } else {
+                s+=iterateAttributesAndFormHTMLLabels(json_o[k], count++)
+            }
         } else {
-            s+='<label><font color=blue>'+json_o[k]+'</font></label><br />';
+            s+='<label style="text-indent:' + count * 20 + 'px">' + k + ': <font color=blue><pre>'+json_o[k]+'</pre></font></label><br />';
         }
     });
     return s;
 };
 
 function createContentFromJson(json_o, tag_id) {
-    var elem = document.createElement('textarea');
-    elem.innerHTML = json_o;
-    var decoded = elem.value;
-    decoded = decoded.replace( /'/g, '"')
-// TODO: test print
-    console.log(decoded);
-    decoded = JSON.parse(decoded);
-    var html = iterateAttributesAndFormHTMLLabels(decoded);
+    var html = iterateAttributesAndFormHTMLLabels(json_o);
     $("#" + tag_id).html(html);
 }
 

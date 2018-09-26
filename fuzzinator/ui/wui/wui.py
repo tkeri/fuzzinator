@@ -96,7 +96,8 @@ class IssueHandler(web.RequestHandler):
 
     def get(self, issue_id):
         issue = self.db.find_issue_by_id(issue_id)
-        self.render('issue.html', issue=issue)
+        issue_json = json.dumps(issue, cls=ObjectIdEncoder)
+        self.render('issue.html', issue=issue, issue_json=issue_json)
 
 # route to index.html
 class IndexHandler(web.RequestHandler):
@@ -135,7 +136,7 @@ class Wui(EventListener):
     def send_message(self, action, data):
         print(self.socket_list)
         for wsSocket in self.socket_list:
-            print('send_message')
+# print('send_message')
             wsSocket.send_message(action, data)
 
     def new_fuzz_job(self, ident, fuzzer, sut, cost, batch):
@@ -154,7 +155,7 @@ class Wui(EventListener):
                     getattr(self, event['fn'])(**event['kwargs'])
             except:
                 break
-        print('process_loop')
+# print('process_loop')
 
 def execute(args=None, parser=None):
     parser = build_parser(parent=parser)
