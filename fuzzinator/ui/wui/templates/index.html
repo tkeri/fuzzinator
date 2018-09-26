@@ -5,52 +5,63 @@
       <h1>Fuzzinator<span id="bug_we_trust">In Bug We Trust.</span></h1>
     </div>
   </div>
-  <div class="container">
-    <!-- Nav tabs -->
-    <ul class="nav nav-tabs" role="tablist">
-      <li class="nav-item">
-        <a class="nav-link active" data-toggle="tab" href="#menu_issues">Issues</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" href="#menu_stats">Stats</a>
-      </li>
-    </ul>
-    <!-- Tab panes -->
-    <div class="tab-content">
-      <!-- Issues -->
-      <div id="menu_issues" class="tab-pane active">
-        <div class="container">
-          <div class="row">
-            <div class="col-sm head_id">Issue ID</div>
-            <div class="col-sm head_fuzzer">Fuzzer</div>
-            <div class="col-sm head_seen">First seen</div>
-            <div class="col-sm head_count">Count</div>
-            <div class="col-sm head_reported">Reduced</div>
-            <div class="col-sm head_reported">Reported</div>
-          </div>
-        </div>
-        <div class="fluid-container">
-          <div class="container">
-            <div id="issues_body" class="list-group">
-            <!-- issue body -->
-            </div>
-          </div>
+  <div class="fluid-container">
+    <div class="row">
+      <div class="col-sm-4"> <!--left-->
+        <div class="container" id="job_container">
+         <div id="job_body"> </div>
         </div>
       </div>
-      <!-- Stats -->
-      <div id="menu_stats" class="tab-pane fade">
+      <div class="col-sm-8"><!--right-->
         <div class="container">
-          <div class="row">
-            <div class="col-sm head_id">Fuzzer</div>
-            <div class="col-sm head_reported">Exec</div>
-            <div class="col-sm head_seen">Issues</div>
-            <div class="col-sm head_count">Unique</div>
-          </div>
-        </div>
-        <div class="container">
-          <ul id="stats_body" class="list-group">
-            <!-- stats body -->
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active issue_stat_tab" data-toggle="tab" href="#menu_issues">Issues</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link issue_stat_tab" data-toggle="tab" href="#menu_stats">Stats</a>
+            </li>
           </ul>
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <!-- Issues -->
+            <div id="menu_issues" class="tab-pane active">
+              <div class="container">
+                <div class="row">
+                  <div class="col-sm head_id">Issue ID</div>
+                  <div class="col-sm head_fuzzer">Fuzzer</div>
+                  <div class="col-sm head_seen">First seen</div>
+                  <div class="col-sm head_count">Count</div>
+                  <div class="col-sm head_reported">Reduced</div>
+                  <div class="col-sm head_reported">Reported</div>
+                </div>
+              </div>
+              <div class="fluid-container">
+                <div class="container">
+                  <div id="issues_body" class="list-group">
+                  <!-- issue body -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Stats -->
+            <div id="menu_stats" class="tab-pane fade">
+              <div class="container">
+                <div class="row">
+                  <div class="col-sm head_id">Fuzzer</div>
+                  <div class="col-sm head_reported">Exec</div>
+                  <div class="col-sm head_seen">Issues</div>
+                  <div class="col-sm head_count">Unique</div>
+                </div>
+              </div>
+              <div class="container">
+                <ul id="stats_body" class="list-group">
+                  <!-- stats body -->
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -131,23 +131,29 @@ class Wui(EventListener):
 
     def unregisterWs(self, wsSocket):
         print('unregisterWs')
-        self.socket_list.append(wsSocket)
+        self.socket_list.remove(wsSocket)
 
     def send_message(self, action, data):
-        print(self.socket_list)
         for wsSocket in self.socket_list:
-# print('send_message')
             wsSocket.send_message(action, data)
 
     def new_fuzz_job(self, ident, fuzzer, sut, cost, batch):
-        self.send_message('new_fuzz_job', ident)
+        data = json.dumps(dict(ident=ident, fuzzer=fuzzer, sut=sut, cost=cost, batch=batch))
+        print('WS SEND: new_fuzz_job')
+        self.send_message('new_fuzz_job', data)
 
-    def new_issue(self, issue):
-        print('new_message')
+    def job_progress(self, ident, progress):
+        data = json.dumps(dict(ident=ident, progress=progress))
+        self.send_message('job_progress', data)
+
+    # TODO: use with websocket
+    ''' def new_issue(self, issue):
+        print('WS SEND: new_issues')
         self.send_message('new_issue', issue)
+    '''
 
     def process_loop(self):
-        print(self.events.qsize())
+        print('qsize: {size}'.format(size=self.events.qsize()))
         while True:
             try:
                 event = self.events.get_nowait()

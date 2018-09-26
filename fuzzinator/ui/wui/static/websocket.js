@@ -1,4 +1,5 @@
 var ws;
+var jobsDict = {};
 function startWebsocket() {
     ws = new WebSocket("ws://10.6.11.69:8080/websocket");
     ws.onopen = function () {
@@ -38,13 +39,53 @@ function startWebsocket() {
                             </div>\
                             </a>';
                 });
-                $("#issues_body").html(issues_content);
+               $("#issues_body").html(issues_content);
                 break;
             case "new_fuzz_job":
-                console.log(data)
+                var job_content = "";
+                var jsonData = JSON.parse(data);
+                jobsDict[jsonData.ident] = jsonData.batch;
+                console.log('new fuzz: ' + JSON.parse(data));
+                job_content += '\
+                <table class="table">\
+                    <thead> \
+                       <tr> \
+                          <th align="center">Fuzz Job</th>\
+                        </tr>\
+                    </thead>\
+                    <tbody>\
+                    <tr>\
+                        <th>Fuzzer</th>\
+                        <td>' + jsonData.fuzzer + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th>Sut</th>\
+                        <td>' + jsonData.sut + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th>Cost</th>\
+                        <td>' + jsonData.cost + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th>Progress</th>\
+                        <td id="' + jsonData.ident + '"> 0 </td>\
+                    </tr>\
+                    </tbody>\
+                </table>';
+                $("#job_body").html(job_content);
+                console.log(document.getElementById(jsonData.ident));
                 break;
-            case "new_issue":
-                console.log(data)
+            case "job_progress":
+                var jsonData = JSON.parse(data);
+                console.log('ident to udpate' + jsonData.ident);
+                console.log(document.getElementsByClassName(jsonData.ident));
+
+                $(document).ready(function(){
+                    //console.log(jsonData.ident + ':' + jsonData.progress + document.getElementById(jsonData.ident));
+                });
+                $("#" + jsonData.ident).ready(function() {
+                    $("#" + jsonData.ident).text(jsonData.progress);
+                });
                 break;
         }
     };
@@ -64,21 +105,24 @@ function updateContent() {
         console.log(request.action);
 };
 
-function iterateAttributesAndFormHTMLLabels(json_o, count=0){
-    var s = "";
 
-    it.forEach(function(k){
-        if (typeof json_o[k] == 'object'){
-            s+='<label><font color=green>' + k + '</font></label><br />';
-            if (json_o[k] === null) {
-                return;
-            } else {
-                s+=iterateAttributesAndFormHTMLLabels(json_o[k], count++)
+function iterateAttributesAndFormHTMLLabels(json_o, count=0){
+    var s = '';
+
+    if (json_o instanceof Array) {
+        json_o.forEach(function(element, index, array) {
+            s += iterateAttributesAndFormHTMLLabels(element, count);
+        });
+    } else if (typeof json_o == 'object') {
+        Object.keys(json_o).forEach(function(k){
+            if (json_o[k] !== null) {
+                s += '<b><label style="text-indent:' + count * 15 + 'px">' + k + ': </label></b><br/>';
+                s += iterateAttributesAndFormHTMLLabels(json_o[k], count + 2)
             }
-        } else {
-            s+='<label style="text-indent:' + count * 20 + 'px">' + k + ': <font color=blue><pre>'+json_o[k]+'</pre></font></label><br />';
-        }
-    });
+        });
+    } else {
+        s += '<label style="text-indent:' + count * 15 + 'px"><pre>' + json_o + '</pre></label><br />';
+    }
     return s;
 };
 

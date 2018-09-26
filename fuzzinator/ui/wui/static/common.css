@@ -1,6 +1,6 @@
 /* index.html */
 .issue_id {
-  font-size: 16px;
+  font-size: 12px;
   display: inline-block;
   width: 350px;
   overflow: hidden;
@@ -10,7 +10,7 @@
 }
 
 .issue_fuzzer {
-  font-size: 16px;
+  font-size: 12px;
   display: inline-block;
   width: 350px;
   overflow: hidden;
@@ -20,7 +20,7 @@
 }
 
 .issue_reported {
-  font-size: 16px;
+  font-size: 12px;
   display: inline-block;
   width: 50px;
   overflow: hidden;
@@ -30,7 +30,7 @@
 }
 
 .issue_seen {
-  font-size: 16px;
+  font-size: 12px;
   display: inline-block;
   width: 170px;
   overflow: hidden;
@@ -39,7 +39,7 @@
 }
 
 .issue_count {
-  font-size: 16px;
+  font-size: 12px;
   display: inline-block;
   width: 30px;
   overflow: hidden;
@@ -50,7 +50,7 @@
 
 .head_id {
   display: block;
-  font-size: 24px;
+  font-size: 16px;
   margin-top: 60px;
   margin-bottom: 0px;
   margin-left: 0;
@@ -61,7 +61,7 @@
 
 .head_fuzzer {
   display: block;
-  font-size: 24px;
+  font-size: 16px;
   margin-top: 60px;
   margin-bottom: 0px;
   margin-left: 0;
@@ -72,7 +72,7 @@
 
 .head_reported {
   display: block;
-  font-size: 24px;
+  font-size: 16px;
   margin-top: 60px;
   margin-bottom: 0px;
   margin-left: 0;
@@ -83,7 +83,7 @@
 
 .head_seen {
   display: block;
-  font-size: 24px;
+  font-size: 16px;
   margin-top: 60px;
   margin-bottom: 0px;
   margin-left: 0;
@@ -94,7 +94,7 @@
 
 .head_count {
   display: block;
-  font-size: 24px;
+  font-size: 16px;
   margin-top: 60px;
   margin-bottom: 0px;
   margin-left: 0;
@@ -106,6 +106,36 @@
 #bug_we_trust {
   font-size: 14px;
   vertical-align: bottom;
+}
+
+.issue_stat_tab {
+  font-size: 14px;
+}
+
+#job_container {
+  margin-top: 39.1px;
+}
+
+.split left {
+  height: 100%;
+  width: 40%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+  left: 0;
+}
+
+.split_right {
+  height: 100%;
+  width: 60%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+  right: 0;
 }
 
 /* base.html */

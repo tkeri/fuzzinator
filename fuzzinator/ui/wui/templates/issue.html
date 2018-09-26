@@ -12,6 +12,9 @@
         {% if 'sut' in issue %}
           <li class="list-group-item"><b>sut: </b>{{ issue['sut'] }}</li>
         {% end %}
+        {% if 'reduced' in issue %}
+          <li class="list-group-item"><b>reduced: </b>{{ issue['reduced'] }}</li>
+        {% end %}
         {% if 'reported' in issue %}
           <li class="list-group-item"><b>reported: </b>{{ issue['reported'] }}</li>
         {% end %}
