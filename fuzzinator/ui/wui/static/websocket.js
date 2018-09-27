@@ -1,7 +1,6 @@
 var ws;
-var jobsDict = {};
 function startWebsocket() {
-    ws = new WebSocket("ws://localhost:8080/websocket");
+    ws = new WebSocket("ws://" + window.location.host + "/websocket");
     ws.onopen = function () {
         updateContent();
     };
@@ -43,15 +42,12 @@ function startWebsocket() {
                             </div>\
                             </a>';
                 });
-               $("#issues_body").html(issues_content);
+                $("#issues_body").html(issues_content);
                 break;
             case "new_fuzz_job":
                 var job_content = "";
-                var jsonData = JSON.parse(data);
-                jobsDict[jsonData.ident] = jsonData.batch;
-                console.log('new fuzz: ' + JSON.parse(data));
                 job_content += '\
-                <table class="table table-bordered">\
+                <table id="' + data.ident + '" class="table table-bordered inactive_job">\
                     <thead> \
                        <tr> \
                           <th colspan="2" align="center">Fuzz Job</th>\
@@ -60,36 +56,35 @@ function startWebsocket() {
                     <tbody>\
                     <tr>\
                         <th>Fuzzer</th>\
-                        <td>' + jsonData.fuzzer + '</td>\
+                        <td>' + data.fuzzer + '</td>\
                     </tr>\
                     <tr>\
                         <th>Sut</th>\
-                        <td>' + jsonData.sut + '</td>\
+                        <td>' + data.sut + '</td>\
                     </tr>\
                     <tr>\
                         <th>Cost</th>\
-                        <td>' + jsonData.cost + '</td>\
+                        <td>' + data.cost + '</td>\
                     </tr>\
                     <tr>\
                         <th>Progress</th>\
-                        <td id="' + jsonData.ident + '"> 0 </td>\
+                        <td>\
+                            <progress class="pBar" id="' + data.ident + '_progBar" value="0" max="' + data.batch + '" />\
+                        </td>\
                     </tr>\
                     </tbody>\
                 </table>';
-                $("#job_body").html(job_content);
-                console.log(document.getElementById(jsonData.ident));
+                $("#job_container").prepend(job_content);
                 break;
             case "job_progress":
-                var jsonData = JSON.parse(data);
-                console.log('ident to udpate' + jsonData.ident);
-                console.log(document.getElementsByClassName(jsonData.ident));
-
-                $(document).ready(function(){
-                    //console.log(jsonData.ident + ':' + jsonData.progress + document.getElementById(jsonData.ident));
-                });
-                $("#" + jsonData.ident).ready(function() {
-                    $("#" + jsonData.ident).text(jsonData.progress);
-                });
+                $("#" + data.ident + "_progBar").attr('value', data.progress);
+                console.log('progress: ' + data.progress)
+                break;
+            case "remove_job":
+                $("#" + data.ident).remove();
+                break;
+            case "activate_job":
+                $("#" + data.ident).removeClass("inactive_job");
                 break;
         }
     };

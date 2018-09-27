@@ -19,13 +19,11 @@ from tornado.options import define, options
 
 # Fuzzinator stuff
 from fuzzinator import Controller
+from fuzzinator.config import config_get_with_writeback
 from fuzzinator.ui import build_parser, process_args
 from .wui_listener import WuiListener
 from fuzzinator.listener import EventListener
 
-
-# TODO: move to fuzzinator
-define('port', default=8080, help='Run on the given port.', type=int)
 
 class ObjectIdEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -113,7 +111,7 @@ class IndexHandler(web.RequestHandler):
 
 class Wui(EventListener):
 
-    def __init__(self, controller, settings):
+    def __init__(self, controller, settings, port):
         self.events = Queue()
         self.lock = Lock()
         controller.listener += self
@@ -122,7 +120,7 @@ class Wui(EventListener):
                     (r'/issue/([0-9a-f]{24})', IssueHandler, dict(db=controller.db)),
                     (r'/websocket', SocketHandler, dict(controller=controller, wui=self))
                 ], **settings)
-        self.app.listen(options.port)
+        self.app.listen(port)
         self.socket_list = []
 
     def registerWs(self, wsSocket):
@@ -138,14 +136,19 @@ class Wui(EventListener):
             wsSocket.send_message(action, data)
 
     def new_fuzz_job(self, ident, fuzzer, sut, cost, batch):
-        data = json.dumps(dict(ident=ident, fuzzer=fuzzer, sut=sut, cost=cost, batch=batch))
-        print('WS SEND: new_fuzz_job: {ident}'.format(ident=ident))
-        self.send_message('new_fuzz_job', data)
+        self.send_message('new_fuzz_job', dict(ident=ident, fuzzer=fuzzer, sut=sut, cost=cost, batch=batch))
 
     def job_progress(self, ident, progress):
-        data = json.dumps(dict(ident=ident, progress=progress))
-        print('WS SEND: update progress: {ident}'.format(ident=ident))
-        self.send_message('job_progress', data)
+        self.send_message('job_progress', dict(ident=ident, progress=progress))
+
+    def remove_job(self, ident):
+        self.send_message('remove_job', dict(ident=ident))
+
+    def job_progress(self, ident, progress):
+        self.send_message('job_progress', dict(ident=ident, progress=progress))
+
+    def activate_job(self, ident):
+        self.send_message('activate_job', dict(ident=ident))
 
     # TODO: use with websocket
     ''' def new_issue(self, issue):
@@ -170,6 +173,7 @@ def execute(args=None, parser=None):
     process_args(arguments)
     #print(arguments.config['fuzzinator.wui']['template_dir'])
 
+    port = int(config_get_with_writeback(arguments.config, 'fuzzinator.wui', 'port', '8080'))
     settings = dict(
         template_path = os.path.join(os.path.dirname(__file__), 'templates'),
         static_path = os.path.join(os.path.dirname(__file__), 'static'),
@@ -177,7 +181,7 @@ def execute(args=None, parser=None):
     )
 
     controller = Controller(config=arguments.config)
-    wui = Wui(controller, settings)
+    wui = Wui(controller, settings, port)
     controller.listener += WuiListener(wui.events, wui.lock)
     fuzz_process = Process(target=controller.run, args=())
 

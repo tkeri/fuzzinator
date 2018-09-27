@@ -7,14 +7,13 @@
   </div>
   <div class="fluid-container">
     <div class="row">
-      <div class="col-sm-4"> <!--left-->
-        <div class="container" id="job_container">
-         <div id="job_body"> </div>
+      <div class="col-sm-3" id="job_container"> <!--left-->
+        <div class="container">
          <!-- Jobs -->
         </div>
       </div>
-      <div class="col-sm-8"><!--right-->
-        <div class="container">
+      <div class="col-sm-9"><!--right-->
+        <div class="container" id="issue_container">
           <!-- Nav tabs -->
           <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item">
@@ -27,7 +26,7 @@
           <!-- Tab panes -->
           <div class="tab-content">
             <!-- Issues -->
-            <div id="menu_issues" class="tab-pane active">
+            <div id="menu_issues" class="tab-pane active menu_issues">
               <div class="container">
                 <div class="row">
                   <div class="col-sm head_id">Issue ID</div>
@@ -39,7 +38,7 @@
                 </div>
               </div>
               <div class="fluid-container">
-                <div class="container">
+                <div class="container menu_issues">
                   <div id="issues_body" class="list-group">
                   <!-- issue body -->
                   </div>
@@ -48,7 +47,7 @@
             </div>
             <!-- Stats -->
             <div id="menu_stats" class="tab-pane fade">
-              <div class="container">
+              <div class="container menu_issues">
                 <div class="row">
                   <div class="col-sm head_id">Fuzzer</div>
                   <div class="col-sm head_reported">Exec</div>
@@ -56,7 +55,7 @@
                   <div class="col-sm head_count">Unique</div>
                 </div>
               </div>
-              <div class="container">
+              <div class="container menu_issues">
                 <ul id="stats_body" class="list-group">
                   <!-- stats body -->
                 </ul>

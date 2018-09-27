@@ -1,4 +1,9 @@
 /* index.html */
+body {
+  margin: 10px;
+  padding: 0px;
+}
+
 .issue_id {
   font-size: 16px;
   display: inline-block;
@@ -103,6 +108,12 @@
   text-align: center;
 }
 
+.menu_issues {
+  max-width: unset;
+  padding-left: unset;
+  padding-right: unset;
+}
+
 #bug_we_trust {
   font-size: 14px;
   vertical-align: bottom;
@@ -113,7 +124,26 @@
 }
 
 #job_container {
-  margin-top: 39.1px;
+  margin-block-start: 123px;
+}
+
+#issue_container {
+  padding-left: unset;
+  padding-right: unset;
+  margin-right: unset;
+  max-width: unset;
+}
+
+.pBar {
+  color: #66a6d1;
+  background-color: #dce2ed;
+  border: 0;
+  height: 15px;
+  border-radius: 1px;
+}
+
+.inactive_job {
+  color: #c5c8cc;
 }
 
 .split left {
