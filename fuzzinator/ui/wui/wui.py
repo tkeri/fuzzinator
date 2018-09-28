@@ -7,8 +7,10 @@ import datetime
 import os
 import json
 import signal
+import logging
+import time
 
-
+from functools import partial
 from multiprocessing import Lock, Process, Queue
 # TODO: HACK
 from bson.objectid import ObjectId
@@ -24,11 +26,12 @@ from fuzzinator.ui import build_parser, process_args
 from .wui_listener import WuiListener
 from fuzzinator.listener import EventListener
 
+MAX_WAIT_SECONDS_BEFORE_SHUTDOWN = 3
 
 class ObjectIdEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
-            return obj.isoformat()
+            return obj.strftime("%Y-%m-%d %H:%M:%S")
         elif isinstance(obj, datetime.date):
             return obj.isoformat()
         elif isinstance(obj, datetime.timedelta):
@@ -50,7 +53,6 @@ class SocketHandler(websocket.WebSocketHandler):
 
     def open(self):
         self.wui.registerWs(self)
-        print("WebSocket opened")
 
     def on_message(self, message):
         request = json.loads(message)
@@ -60,20 +62,20 @@ class SocketHandler(websocket.WebSocketHandler):
             issues = self.controller.db.all_issues()
 
             self.send_message('set_stats', stats)
-#TEST PRINT:
-            #print('WS SEND: set_stats')
         elif action == 'get_issues':
             issues = self.controller.db.all_issues()
 
             self.send_message('set_issues', issues)
-#TEST PRINT:
-            #print('WS SEND: set_issues')
+
+        elif action == 'get_jobs':
+            for (ident, fuzzer, sut, cost, batch) in self.controller.iter_running_jobs():
+                self.send_message('new_fuzz_job', dict(ident=ident, fuzzer=fuzzer, sut=sut, cost=cost, batch=batch))
+
         else:
             print('ERROR: Invalid {action} message!'.format(action=action))
 
     def on_close(self):
         self.wui.unregisterWs(self)
-        print("WebSocket closed")
 
     def send_message(self, action, data):
         message = {
@@ -105,7 +107,6 @@ class IndexHandler(web.RequestHandler):
         super(IndexHandler, self).__init__(*args, **kwargs)
 
     def get(self):
-        issues = self.db.all_issues()
         self.render('index.html')
 
 
@@ -114,22 +115,28 @@ class Wui(EventListener):
     def __init__(self, controller, settings, port):
         self.events = Queue()
         self.lock = Lock()
-        controller.listener += self
+        self.controller = controller
         self.app = web.Application([
                     (r'/', IndexHandler, dict(db=controller.db)),
                     (r'/issue/([0-9a-f]{24})', IssueHandler, dict(db=controller.db)),
                     (r'/websocket', SocketHandler, dict(controller=controller, wui=self))
-                ], **settings)
-        self.app.listen(port)
+                ], autoreload=False, **settings)
+        self.server = self.app.listen(port)
         self.socket_list = []
 
+    def registerSignals(self):
+        signal.signal(signal.SIGTERM, partial(self.sig_handler, self))
+        signal.signal(signal.SIGINT, partial(self.sig_handler, self))
+
     def registerWs(self, wsSocket):
-        #print('registerWs')
         self.socket_list.append(wsSocket)
 
     def unregisterWs(self, wsSocket):
-        #print('unregisterWs')
         self.socket_list.remove(wsSocket)
+
+    def stopWs(self):
+        for wsSocket in self.socket_list:
+            wsSocket.close()
 
     def send_message(self, action, data):
         for wsSocket in self.socket_list:
@@ -144,20 +151,15 @@ class Wui(EventListener):
     def remove_job(self, ident):
         self.send_message('remove_job', dict(ident=ident))
 
-    def job_progress(self, ident, progress):
-        self.send_message('job_progress', dict(ident=ident, progress=progress))
-
     def activate_job(self, ident):
         self.send_message('activate_job', dict(ident=ident))
 
     # TODO: use with websocket
     ''' def new_issue(self, issue):
-        print('WS SEND: new_issues')
         self.send_message('new_issue', issue)
     '''
 
     def process_loop(self):
-        print('qsize: {size}'.format(size=self.events.qsize()))
         while True:
             try:
                 event = self.events.get_nowait()
@@ -165,15 +167,40 @@ class Wui(EventListener):
                     getattr(self, event['fn'])(**event['kwargs'])
             except:
                 break
-# print('process_loop')
+
+    @staticmethod
+    def sig_handler(wui, sig, frame):
+        io_loop = ioloop.IOLoop.instance()
+
+        def stop_loop(deadline):
+            now = time.time()
+            if now < deadline:
+                logging.info('Waiting for next tick')
+                io_loop.add_timeout(now + 1, stop_loop, deadline)
+            else:
+                io_loop.stop()
+                logging.info('Shutdown finally')
+
+        def shutdown():
+            logging.info('Stopping http server')
+            wui.stopWs()
+            wui.server.stop()
+            logging.info('Will shutdown in %s seconds ...',
+                        MAX_WAIT_SECONDS_BEFORE_SHUTDOWN)
+            stop_loop(time.time() + MAX_WAIT_SECONDS_BEFORE_SHUTDOWN)
+
+        logging.warning('Caught signal: %s', sig)
+        io_loop.add_callback_from_signal(shutdown)
+
+
 
 def execute(args=None, parser=None):
     parser = build_parser(parent=parser)
     arguments = parser.parse_args(args)
     process_args(arguments)
-    #print(arguments.config['fuzzinator.wui']['template_dir'])
 
     port = int(config_get_with_writeback(arguments.config, 'fuzzinator.wui', 'port', '8080'))
+    print('You can open wui on http://localhost:{port}'.format(port=port))
     settings = dict(
         template_path = os.path.join(os.path.dirname(__file__), 'templates'),
         static_path = os.path.join(os.path.dirname(__file__), 'static'),
@@ -186,7 +213,9 @@ def execute(args=None, parser=None):
     fuzz_process = Process(target=controller.run, args=())
 
     iol = ioloop.IOLoop.instance()
-    iolcb =ioloop.PeriodicCallback(wui.process_loop, 1000)
+    iolcb = ioloop.PeriodicCallback(wui.process_loop, 1000)
+
+    wui.registerSignals()
 
     try:
         fuzz_process.start()

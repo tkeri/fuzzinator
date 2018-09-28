@@ -1,7 +1,16 @@
 /* index.html */
 body {
-  margin: 10px;
+  margin: 0 2% 0 2%;
   padding: 0px;
+}
+
+#header {
+  padding: unset;
+  max-width: unset;
+}
+
+#jumbo {
+  max-height: 80px;
 }
 
 .issue_id {
@@ -32,6 +41,7 @@ body {
   white-space: nowrap;
   text-overflow: ellipsis;
   text-align: center;
+  padding: unset;
 }
 
 .issue_seen {
@@ -41,6 +51,7 @@ body {
   overflow: hidden;
   white-space: nowrap;
   text-align: center;
+  padding: unset;
 }
 
 .issue_count {
@@ -51,6 +62,7 @@ body {
   white-space: nowrap;
   text-overflow: ellipsis;
   text-align: center;
+  padding: unset;
 }
 
 .head_id {
@@ -81,9 +93,10 @@ body {
   margin-top: 60px;
   margin-bottom: 0px;
   margin-left: 0;
-  margin-right: 0;
+  margin-right: 18px;
   font-weight: bold;
   text-align: center;
+  padding: unset;
 }
 
 .head_seen {
@@ -95,9 +108,21 @@ body {
   margin-right: 0;
   font-weight: bold;
   text-align: center;
+  padding: unset;
 }
 
 .head_count {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 0px;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+  text-align: center;
+  padding: unset;
+}
+
+.head_unique {
   display: block;
   font-size: 16px;
   margin-top: 60px;
@@ -106,6 +131,31 @@ body {
   margin-right: 0;
   font-weight: bold;
   text-align: center;
+  padding: unset;
+}
+
+.head_issues {
+  display: block;
+  font-size: 16px;
+  margin-top: 60px;
+  margin-bottom: 0px;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+  text-align: center;
+  padding: unset;
+}
+
+.head_exec {
+  display: block;
+  font-size: 16px;
+  margin-top: 60px;
+  margin-bottom: 0px;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+  text-align: center;
+  padding: unset;
 }
 
 .menu_issues {
@@ -127,7 +177,7 @@ body {
   margin-block-start: 123px;
 }
 
-#issue_container {
+.issue_container {
   padding-left: unset;
   padding-right: unset;
   margin-right: unset;
@@ -168,6 +218,17 @@ body {
   right: 0;
 }
 
+/* issue.html */
+
+#houzz {
+  font-size: 25px;
+  color: #5d5f60;
+}
+
+.extend {
+  font-size: 20px;
+  color: #5d5f60;
+}
 /* base.html */
 .footer {
    left: 0;

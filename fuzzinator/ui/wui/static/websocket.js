@@ -33,21 +33,28 @@ function startWebsocket() {
                     issues_content += '\
                             <a href="/issue/' + data[k]._id + '" class="list-group-item list-group-item-action">\
                             <div class="row">\
-                            <div class="col-sm issue_id" data-togle="tool-tip" title="' + data[k].id + '">' + data[k].id + '</div>\
-                            <div class="col-sm issue_fuzzer" data-togle="tool-tip" title="' + data[k].fuzzer + '">' + data[k].fuzzer + '</div>\
-                            <div class="col-sm issue_seen">' + data[k].first_seen + '</div>\
-                            <div class="col-sm issue_count">' + data[k].count + '</div>\
-                            <div class="col-sm issue_reported">' + reduced_icon  + '</div>\
-                            <div class="col-sm issue_reported">' + reported_icon  + '</div>\
+                                <div class="col-sm issue_id" data-togle="tool-tip" title="' + data[k].id + '">' + data[k].id + '</div>\
+                                <div class="col-sm issue_fuzzer" data-togle="tool-tip" title="' + data[k].fuzzer + '">' + data[k].fuzzer + '</div>\
+                                <div class="col-sm issue_seen">' + data[k].first_seen + '</div>\
+                                <div class="col-sm issue_count">\
+                                    <div class="row">\
+                                        <div class="col-sm">' + data[k].count + '</div>\
+                                        <div class="col-sm">' + reduced_icon  + '</div>\
+                                        <div class="col-sm">' + reported_icon  + '</div>\
+                                    </div>\
+                                </div>\
                             </div>\
                             </a>';
                 });
                 $("#issues_body").html(issues_content);
                 break;
             case "new_fuzz_job":
+                if (document.getElementById(data.ident))
+                    break;
                 var job_content = "";
+                // TODO: add inactive_job to data.ident's class
                 job_content += '\
-                <table id="' + data.ident + '" class="table table-bordered inactive_job">\
+                <table id="' + data.ident + '" class="table table-bordered">\
                     <thead> \
                        <tr> \
                           <th colspan="2" align="center">Fuzz Job</th>\
@@ -78,7 +85,6 @@ function startWebsocket() {
                 break;
             case "job_progress":
                 $("#" + data.ident + "_progBar").attr('value', data.progress);
-                console.log('progress: ' + data.progress)
                 break;
             case "remove_job":
                 $("#" + data.ident).remove();
@@ -95,13 +101,12 @@ function updateContent() {
         };
         request.action = 'get_issues';
         ws.send(JSON.stringify(request));
-// TEST print
-        console.log(request.action);
+
+        request.action = 'get_jobs';
+        ws.send(JSON.stringify(request));
 
         request.action = 'get_stats';
         ws.send(JSON.stringify(request));
-// TEST print
-        console.log(request.action);
 };
 
 
@@ -140,3 +145,11 @@ function setRightIcon(data) {
 
 startWebsocket();
 var content_update =  setInterval(updateContent, 4000);
+
+function expandAll() {
+    $('.panel-collapse').collapse('show');
+};
+
+function collapseAll() {
+    $('.panel-collapse').collapse('hide');
+};

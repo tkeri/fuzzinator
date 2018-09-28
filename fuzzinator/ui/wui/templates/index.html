@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block body %}
-  <div class="container">
-    <div class="jumbotron">
+  <div class="container" id="header">
+    <div class="jumbotron" id="jumbo">
       <h1>Fuzzinator<span id="bug_we_trust">In Bug We Trust.</span></h1>
     </div>
   </div>
@@ -13,7 +13,7 @@
         </div>
       </div>
       <div class="col-sm-9"><!--right-->
-        <div class="container" id="issue_container">
+        <div class="container issue_container">
           <!-- Nav tabs -->
           <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item">
@@ -27,14 +27,18 @@
           <div class="tab-content">
             <!-- Issues -->
             <div id="menu_issues" class="tab-pane active menu_issues">
-              <div class="container">
-                <div class="row">
+              <div class="container issue_container">
+                <div class="row" style="margin-right: 0px">
                   <div class="col-sm head_id">Issue ID</div>
                   <div class="col-sm head_fuzzer">Fuzzer</div>
                   <div class="col-sm head_seen">First seen</div>
-                  <div class="col-sm head_count">Count</div>
-                  <div class="col-sm head_reported">Reduced</div>
-                  <div class="col-sm head_reported">Reported</div>
+                  <div class="col-sm head_count">
+                    <div class="row">
+                      <div class="col-sm head_reported">Count</div>
+                      <div class="col-sm head_reported">Reduced</div>
+                      <div class="col-sm head_reported">Reported</div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="fluid-container">
@@ -49,10 +53,10 @@
             <div id="menu_stats" class="tab-pane fade">
               <div class="container menu_issues">
                 <div class="row">
-                  <div class="col-sm head_id">Fuzzer</div>
-                  <div class="col-sm head_reported">Exec</div>
-                  <div class="col-sm head_seen">Issues</div>
-                  <div class="col-sm head_count">Unique</div>
+                  <div class="col-sm head_fuzzer">Fuzzer</div>
+                  <div class="col-sm head_exec">Exec</div>
+                  <div class="col-sm head_issues">Issues</div>
+                  <div class="col-sm head_unique">Unique</div>
                 </div>
               </div>
               <div class="container menu_issues">

@@ -3,6 +3,9 @@
 {% block body %}
   <script>var issue_data = {% raw issue_json %}; </script>
   <div class="container">
+    <a href="/"><i class="fab fa-houzz" id="houzz" data-toggle="tool-tip" title="home"></i></a>
+    <i onclick="collapseAll()" class="fas fa-angle-double-up expand" data-toggle="tool-tip" title="collapse all"></i>
+    <i onclick="expandAll()" class="fas fa-angle-double-down expand" data-toggle="tool-tip" title="expand all"></i>
     <div class="panel-group">
       <div class="list-group">
         <li class="list-group-item"><b>_id: </b>{{ issue['_id'] }}</li>
