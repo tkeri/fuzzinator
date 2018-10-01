@@ -12,7 +12,7 @@ function startWebsocket() {
         switch (action) {
             case "get_stats":
                 Object.keys(data).forEach(function(k){
-                    var content = document.querySelector("#stat-card-template").content;
+                    var content = document.querySelector("#stat-card-template").content.cloneNode(true);
                     content.querySelector(".fuzzer").textContent = k;
                     content.querySelector(".executed").textContent = data[k].exec;
                     content.querySelector(".failed").textContent = data[k].issues;
@@ -23,7 +23,7 @@ function startWebsocket() {
 
             case "get_issues":
                 Object.keys(data).forEach(function(k){
-                    var content = document.querySelector("#issue-card-template").content;
+                    var content = document.querySelector("#issue-card-template").content.cloneNode(true);
                     content.querySelector(".issue-id").textContent = data[k].id;
                     content.querySelector(".issue-id").setAttribute("onclick", "open_issue('" + data[k]._id + "')");
                     content.querySelector(".issue-id").setAttribute("title", data[k].id);
@@ -65,7 +65,7 @@ function startWebsocket() {
                 if (document.getElementById("job-" + data.ident))
                     break;
 
-                var content = document.querySelector("#fuzz-job-template").content;
+                var content = document.querySelector("#fuzz-job-template").content.cloneNode(true);
                 content.querySelector(".fuzz-job-id").textContent = data.ident;
                 content.querySelector(".fuzz-job-fuzzer").textContent = data.fuzzer;
                 content.querySelector(".fuzz-job-sut").textContent = data.sut;
@@ -76,7 +76,7 @@ function startWebsocket() {
                 break;
 
             case "new_reduce_job":
-                var content = document.querySelector("#reduce-job-template").content;
+                var content = document.querySelector("#reduce-job-template").content.cloneNode(true);
                 content.querySelector('.card').id = 'job-' + data.ident;
                 content.querySelector(".reduce-job-id").textContent = data.ident;
                 content.querySelector(".reduce-job-sut").textContent = data.sut;
@@ -86,7 +86,7 @@ function startWebsocket() {
                 break;
 
             case "new_update_job":
-                var content = document.querySelector("#update-job-template").content;
+                var content = document.querySelector("#update-job-template").content.cloneNode(true);
                 content.querySelector('.card').id = 'job-' + data.ident;
                 content.querySelector(".update-job-id").textContent = data.ident;
                 content.querySelector(".update-job-sut").textContent = data.sut;
@@ -117,7 +117,7 @@ function startWebsocket() {
                 break;
 
             case "new_issue":
-                var content = document.querySelector("#issue-card-template").content;
+                var content = document.querySelector("#issue-card-template").content.cloneNode(true);
                 content.querySelector(".issue-id").textContent = data.id;
                 content.querySelector(".sut-id").textContent = data.sut;
                 content.querySelector(".fuzzer-id").textContent = data.fuzzer;
