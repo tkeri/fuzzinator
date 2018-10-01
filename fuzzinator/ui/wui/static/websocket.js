@@ -40,7 +40,7 @@ function startWebsocket() {
                 break;
 
             case "get_issue":
-                var content = document.querySelector("#issue-details-template").content;
+                var content = document.querySelector("#issue-details-template").content.cloneNode(true);
                 content.querySelector(".issue-id").textContent = data.id;
                 content.querySelector(".sut-id").textContent = data.sut;
                 content.querySelector(".fuzzer-id").textContent = data.fuzzer;
