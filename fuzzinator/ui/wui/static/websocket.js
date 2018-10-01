@@ -24,8 +24,10 @@ function startWebsocket() {
             case "get_issues":
                 Object.keys(data).forEach(function(k){
                     var content = document.querySelector("#issue-card-template").content.cloneNode(true);
+                    content.querySelector(".card").id = data[k]._id;
                     content.querySelector(".issue-id").textContent = data[k].id;
                     content.querySelector(".issue-id").setAttribute("onclick", "open_issue('" + data[k]._id + "')");
+                    content.querySelector(".delete-issue").setAttribute("onclick", "delete_issue('" + data[k]._id + "')");
                     content.querySelector(".issue-id").setAttribute("title", data[k].id);
                     content.querySelector(".sut-id").textContent = data[k].sut;
                     content.querySelector(".fuzzer-id").textContent = data[k].fuzzer;
@@ -117,20 +119,24 @@ function startWebsocket() {
                 break;
 
             case "new_issue":
+                data = data.issue;
                 var content = document.querySelector("#issue-card-template").content.cloneNode(true);
+                content.querySelector(".card").id = data._id;
                 content.querySelector(".issue-id").textContent = data.id;
+                content.querySelector(".issue-id").setAttribute("onclick", "open_issue('" + data._id + "')");
+                content.querySelector(".delete-issue").setAttribute("onclick", "delete_issue('" + data._id + "')");
                 content.querySelector(".sut-id").textContent = data.sut;
                 content.querySelector(".fuzzer-id").textContent = data.fuzzer;
-                content.querySelector(".first-seen").textContent = data.first_seen;
+                content.querySelector(".date_range").textContent = data.first_seen + " .. " + data.last_seen;
                 content.querySelector(".count").textContent = 1;
                 if (data.reduced)
                     content.querySelector(".reduced").textContent = 'crop';
                 if (data.reported)
                     content.querySelector(".reported").textContent = 'link';
                 var issue_list = document.querySelector("#issues");
-                issue_list.insertBefore(document.importNode(content, true), issue_list.childNodes[0] || null);
+                issue_list.appendChild(document.importNode(content, true));
+                fire_work();
                 break;
-
         }
     };
 };

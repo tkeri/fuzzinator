@@ -36,18 +36,26 @@
   <script>
     /* NOTE: right now, this is triggered on a click, but should be triggered by the 'new issue' event */
     $('.navbar-brand').click(function () {
-      $('.fz-brand').addClass('fz-brand-fireworks');
-      $('.fz-brand').one('animationend', function(event) {
-        $(this).removeClass('fz-brand-fireworks')
-      });
+      fire_work();
     });
 
+    function fire_work() {
+      $('.fz-brand').addClass('fz-brand-fireworks');
+        $('.fz-brand').one('animationend', function(event) {
+          $(this).removeClass('fz-brand-fireworks')
+        });
+    }
+
     function open_issue(issue_id) {
-      console.log("open issue:" + issue_id);
       $('#chevron-tab').removeClass('invisible');
       $('#issue-tab').removeClass('invisible');
       $('#issue-tab').tab('show');
       ws.send(JSON.stringify({"action": 'get_issue', "_id": issue_id}));
+    }
+
+    function delete_issue(issue_id) {
+      $("#" + issue_id).remove();
+      ws.send(JSON.stringify({"action": 'delete_issue', "_id": issue_id}));
     }
 
     $('#issue-tab').on('hidden.bs.tab', function (e) {

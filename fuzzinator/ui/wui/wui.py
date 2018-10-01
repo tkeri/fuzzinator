@@ -74,6 +74,9 @@ class SocketHandler(websocket.WebSocketHandler):
 
             self.send_message('get_issue', issue_dict)
 
+        elif action == 'delete_issue':
+            self.controller.db.remove_issue_by_id(request['_id'])
+
         else:
             logger.warning('ERROR: Invalid {action} message!'.format(action=action))
 
@@ -163,8 +166,8 @@ class Wui(EventListener):
     def activate_job(self, **kwargs):
         self.send_message('activate_job', kwargs)
 
-    def new_issue(self, issue):
-        self.send_message('new_issue', issue)
+    def new_issue(self, **kwargs):
+        self.send_message('new_issue', kwargs)
 
     def warning(self, msg):
         logger.warning(msg)
