@@ -10,10 +10,10 @@ import os
 import signal
 import time
 
-from functools import partial
-from multiprocessing import Lock, Process, Queue
 # TODO: HACK
 from bson.objectid import ObjectId
+from functools import partial
+from multiprocessing import Lock, Process, Queue
 
 # Webserver stuff
 from tornado import websocket, web, ioloop
@@ -70,8 +70,9 @@ class SocketHandler(websocket.WebSocketHandler):
                self.send_message('new_fuzz_job', dict(ident=ident, fuzzer=fuzzer, sut=sut, cost=cost, batch=batch))
 
         elif action == 'get_issue':
-            print('get_issue:', request)
-            self.send_message('get_issue', self.controller.db.find_issue_by_id(request['_id']))
+            issue_dict = self.controller.db.find_issue_by_id(request['_id'])
+
+            self.send_message('get_issue', issue_dict)
 
         else:
             logger.warning('ERROR: Invalid {action} message!'.format(action=action))

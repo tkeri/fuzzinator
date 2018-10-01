@@ -42,14 +42,18 @@ function startWebsocket() {
             case "get_issue":
                 var content = document.querySelector("#issue-details-template").content;
                 content.querySelector(".issue-id").textContent = data.id;
-                content.querySelector(".issue-id").setAttribute("onclick", "open_issue('" + data._id + "')");
-                content.querySelector(".issue-id").setAttribute("title", data.id);
                 content.querySelector(".sut-id").textContent = data.sut;
                 content.querySelector(".fuzzer-id").textContent = data.fuzzer;
-                content.querySelector(".date_range").textContent = data.first_seen + " .. " + data.last_seen;
-                content.querySelector(".count").textContent = data.count;
+
+                if ('first_seen' in data && 'last_seen' in data)
+                    content.querySelector(".date_range").textContent = data.first_seen + " .. " + data.last_seen;
+
+                if ('count' in data)
+                    content.querySelector(".count").textContent = data.count;
+
                 if (data.reduced)
                     content.querySelector(".reduced").textContent = 'crop';
+
                 if (data.reported)
                     content.querySelector(".reported").textContent = 'link';
 
@@ -90,7 +94,12 @@ function startWebsocket() {
                 break;
 
             case "job_progress":
-                var progress = document.querySelector('#job-' + data.ident).querySelector('.progress-bar');
+                var job = document.querySelector('#job-' + data.ident);
+
+                if (job === null)
+                    break;
+
+                var progress = job.querySelector('.progress-bar');
                 var percent = Math.round(data.progress / progress.getAttribute('data-maxvalue') * 100);
                 progress.style = "width: " + percent + "%";
                 progress.setAttribute('aria-valuenow', percent);
@@ -99,7 +108,8 @@ function startWebsocket() {
 
             case "activate_job":
                 var job_card = document.querySelector('#job-' + data.ident);
-                job_card.classList.replace("bg-secondary", "bg-info");
+                if (job_card !== null)
+                    job_card.classList.replace("bg-secondary", "bg-info");
                 break;
 
             case "remove_job":

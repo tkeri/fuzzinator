@@ -65,34 +65,31 @@
             </div>
 
             <!-- issue card start -->
-              <template id="issue-details-template">
-                <div class="card issue-content container-fluid border-light mb-1 pl-2 bg-warning rounded-0">
-                  <div class="row bg-white ml-0">
-                    <div class="col-10 order-1 text-truncate"><i class="material-icons md-18 align-text-top">priority_high</i> <span class="issue-id" data-togle="tool-tip" title=""></span></div>
-                    <div class="col-12 order-3 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">my_location</i> <span class="sut-id"></span></div>
-                    <div class="col-12 order-4 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">shuffle</i> <span class="fuzzer-id"></span></div>
-                    <div class="col-12 order-5 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">date_range</i> <span class="date_range"></span></div>
-                    <div class="col-12 order-6 text-nowrap text-md-right text-secondary small"><i class="material-icons md-14 align-text-top">repeat</i><span class="count"></span></div>
-                    <div class="col-2 order-2 text-nowrap text-right text-secondary small">
-                      <i class="reduced material-icons md-14 align-text-top" title="reduced"></i>
-                      <i class="reported material-icons md-14 align-text-top" title="reported"></i>
-                      <div class="btn-group dropleft">
-                        <button class="btn btn-light btn-sm dropdown-toggle pl-1 pr-3" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-                        <div class="dropdown-menu m-0 p-0" style="min-width: auto" aria-labelledby="dropdownMenuButton">
-                          <div class="btn-group btn-group-sm" role="group">
-                            <button type="button" class="btn btn-light" title="reduce"><i class="material-icons md-14 align-text-top">crop</i></button>
-                            <button type="button" class="btn btn-light" title="validate"><i class="material-icons md-14 align-text-top">replay</i></button>
-                          </div>
+            <template id="issue-details-template">
+              <div class="card issue-content container-fluid border-light mb-1 pl-2 bg-warning rounded-0">
+                <div class="row bg-white ml-0">
+                  <div class="col-10 order-1 text-truncate"><i class="material-icons md-18 align-text-top">priority_high</i> <span class="issue-id" data-togle="tool-tip" title=""></span></div>
+                  <div class="col-12 order-3 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">my_location</i> <span class="sut-id"></span></div>
+                  <div class="col-12 order-4 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">shuffle</i> <span class="fuzzer-id"></span></div>
+                  <div class="col-12 order-5 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">date_range</i> <span class="date_range"></span></div>
+                  <div class="col-12 order-6 text-nowrap text-md-right text-secondary small"><i class="material-icons md-14 align-text-top">repeat</i><span class="count"></span></div>
+                  <div class="col-2 order-2 text-nowrap text-right text-secondary small">
+                    <i class="reduced material-icons md-14 align-text-top" title="reduced"></i>
+                    <i class="reported material-icons md-14 align-text-top" title="reported"></i>
+                    <div class="btn-group dropleft">
+                      <button class="btn btn-light btn-sm dropdown-toggle pl-1 pr-3" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                      <div class="dropdown-menu m-0 p-0" style="min-width: auto" aria-labelledby="dropdownMenuButton">
+                        <div class="btn-group btn-group-sm" role="group">
+                          <button type="button" class="btn btn-light" title="reduce"><i class="material-icons md-14 align-text-top">crop</i></button>
+                          <button type="button" class="btn btn-light" title="validate"><i class="material-icons md-14 align-text-top">replay</i></button>
                         </div>
                       </div>
                     </div>
-
-                      <ul class="backtrace list-unstyled"></ul>
-                    </div>
                   </div>
                 </div>
-              </template>
-              <!-- issue card end -->
+              </div>
+            </template>
+            <!-- issue card end -->
 
             <div class="tab-pane" id="issue" role="tabpanel" aria-labelledby="issue-tab">
             </div>
