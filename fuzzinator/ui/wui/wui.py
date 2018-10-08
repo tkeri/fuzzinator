@@ -169,6 +169,9 @@ class Wui(EventListener):
     def new_issue(self, **kwargs):
         self.send_message('new_issue', kwargs)
 
+    def update_fuzz_stat(self):
+        self.send_message('update_fuzz_stat', self.controller.db.stat_snapshot(None))
+
     def warning(self, msg):
         logger.warning(msg)
 

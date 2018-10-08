@@ -13,11 +13,21 @@ function startWebsocket() {
             case "get_stats":
                 Object.keys(data).forEach(function(k){
                     var content = document.querySelector("#stat-card-template").content.cloneNode(true);
+                    content.firstElementChild.classList.add(k);
                     content.querySelector(".fuzzer").textContent = k;
                     content.querySelector(".executed").textContent = data[k].exec;
                     content.querySelector(".failed").textContent = data[k].issues;
                     content.querySelector(".unique").textContent = data[k].unique;
                     $("#stats").append(document.importNode(content, true));
+                });
+                break;
+
+            case "update_fuzz_stat":
+                Object.keys(data).forEach(function(k){
+                    var content = document.querySelector("." + k);
+                    content.querySelector(".executed").textContent = data[k].exec;
+                    content.querySelector(".failed").textContent = data[k].issues;
+                    content.querySelector(".unique").textContent = data[k].unique;
                 });
                 break;
 
