@@ -20,7 +20,8 @@ from tornado import websocket, web, ioloop
 
 # Fuzzinator stuff
 from fuzzinator import Controller
-from fuzzinator.config import config_get_with_writeback
+from fuzzinator.config import config_get_with_writeback, config_get_callable
+from fuzzinator.formatter import JsonFormatter
 from fuzzinator.ui import build_parser, process_args
 from .wui_listener import WuiListener
 from fuzzinator.listener import EventListener
@@ -98,12 +99,22 @@ class SocketHandler(websocket.WebSocketHandler):
 class IssueHandler(web.RequestHandler):
     def __init__(self, *args, **kwargs):
         self.db = kwargs.pop('db')
+        self.config = kwargs.pop('config')
         super(IssueHandler, self).__init__(*args, **kwargs)
 
     def get(self, issue_id):
         issue = self.db.find_issue_by_id(issue_id)
+        formatter = self._load_formatter(issue['sut'])
         issue_json = json.dumps(issue, cls=ObjectIdEncoder)
-        self.render('issue.html', issue=issue, issue_json=issue_json)
+        issue_body = formatter(issue, format='long')
+        print(formatter, issue_body)
+        self.render('issue.html', issue=issue, issue_json=issue_json, issue_body=issue_body)
+
+    def _load_formatter(self, sut):
+        if self.config.has_option('fuzzinator.wui.issue.formatter', 'wui_formatter'):
+            return config_get_callable(self.config, 'fuzzinator.wui.issue.formatter', 'wui_formatter')[0]
+
+        return JsonFormatter
 
 # route to index.html
 class IndexHandler(web.RequestHandler):
@@ -124,7 +135,7 @@ class Wui(EventListener):
         self.controller = controller
         self.app = web.Application([
                     (r'/', IndexHandler, dict(db=controller.db)),
-                    (r'/issue/([0-9a-f]{24})', IssueHandler, dict(db=controller.db)),
+                    (r'/issue/([0-9a-f]{24})', IssueHandler, dict(db=controller.db, config=controller.config)),
                     (r'/websocket', SocketHandler, dict(controller=controller, wui=self))
                 ], autoreload=False, **settings)
         self.server = self.app.listen(port)
