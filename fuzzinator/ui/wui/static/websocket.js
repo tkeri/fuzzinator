@@ -35,7 +35,8 @@ function startWebsocket() {
                 Object.keys(data).forEach(function(k){
                     var content = document.querySelector("#issue-card-template").content.cloneNode(true);
                     content.querySelector(".card").id = data[k]._id;
-                    content.querySelector(".issue-id").setAttribute("onclick", "open_issue('" + data[k]._id + "')");
+                    content.querySelector(".reduce-issue").setAttribute("onclick", "reduce_issue('" + data[k]._id + "')");
+                    content.querySelector(".validate-issue").setAttribute("onclick", "validate_issue('" + data[k]._id + "')");
                     content.querySelector(".issue-ref").textContent = data[k].id;
                     content.querySelector(".issue-ref").setAttribute("href", "/issue/" + data[k]._id);
                     content.querySelector(".delete-issue").setAttribute("onclick", "delete_issue('" + data[k]._id + "')");
@@ -85,6 +86,9 @@ function startWebsocket() {
                 content.querySelector(".progress-bar").setAttribute("data-maxvalue", data.batch);
                 var new_node = document.importNode(content, true);
                 new_node.querySelector('.card').id = 'job-' + data.ident;
+                if (data.status == 'active') {
+                    new_node.querySelector('.card').classList.add('bg-info')
+                }
                 $("#jobs").append(new_node);
                 break;
 
@@ -95,7 +99,11 @@ function startWebsocket() {
                 content.querySelector(".reduce-job-sut").textContent = data.sut;
                 content.querySelector(".reduce-job-issue").textContent = data.issue_id;
                 content.querySelector(".progress-bar").setAttribute("data-maxvalue", data.size);
-                $("#jobs").append(document.importNode(content, true));
+                var new_node = document.importNode(content, true);
+                if (data.status == 'active') {
+                    new_node.querySelector('.card').classList.add('bg-info')
+                }
+                $("#jobs").append(new_node);
                 break;
 
             case "new_update_job":
@@ -103,7 +111,24 @@ function startWebsocket() {
                 content.querySelector('.card').id = 'job-' + data.ident;
                 content.querySelector(".update-job-id").textContent = data.ident;
                 content.querySelector(".update-job-sut").textContent = data.sut;
-                $("#jobs").append(document.importNode(content, true));
+                var new_node = document.importNode(content, true);
+                if (data.status == 'active') {
+                    new_node.querySelector('.card').classList.add('bg-info')
+                }
+                $("#jobs").append(new_node);
+                break;
+
+            case "new_validate_job":
+                var content = document.querySelector("#validate-job-template").content.cloneNode(true);
+                content.querySelector('.card').id = 'job-' + data.ident;
+                content.querySelector(".validate-job-id").textContent = data.ident;
+                content.querySelector(".validate-job-sut").textContent = data.sut;
+                content.querySelector(".validate-job-issue").textContent = data.issue_id;
+                var new_node = document.importNode(content, true);
+                if (data.status == 'active') {
+                    new_node.querySelector('.card').classList.add('bg-info')
+                }
+                $("#jobs").append(new_node);
                 break;
 
             case "job_progress":
@@ -121,7 +146,7 @@ function startWebsocket() {
 
             case "activate_job":
                 var job_card = document.querySelector('#job-' + data.ident);
-                if (job_card !== null)
+                if (job_card !== null && job_card.classList.contains('bg-secondary'))
                     job_card.classList.replace("bg-secondary", "bg-info");
                 break;
 
@@ -135,6 +160,8 @@ function startWebsocket() {
                 content.querySelector(".card").id = data._id;
                 content.querySelector(".issue-id").textContent = data.id;
                 content.querySelector(".issue-id").setAttribute("onclick", "open_issue('" + data._id + "')");
+                content.querySelector(".reduce-issue").setAttribute("onclick", "reduce_issue('" + data._id + "')");
+                content.querySelector(".validate-issue").setAttribute("onclick", "validate_issue('" + data._id + "')");
                 content.querySelector(".delete-issue").setAttribute("onclick", "delete_issue('" + data._id + "')");
                 content.querySelector(".sut-id").textContent = data.sut;
                 content.querySelector(".fuzzer-id").textContent = data.fuzzer;

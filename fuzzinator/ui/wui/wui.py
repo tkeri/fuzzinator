@@ -13,7 +13,7 @@ import time
 # TODO: HACK
 from bson.objectid import ObjectId
 from functools import partial
-from multiprocessing import Lock, Process, Queue
+from multiprocessing import Lock, Process, Queue, Manager
 
 # Webserver stuff
 from tornado import websocket, web, ioloop
@@ -67,8 +67,8 @@ class SocketHandler(websocket.WebSocketHandler):
             self.send_message('get_issues', self.controller.db.all_issues())
 
         elif action == 'get_jobs':
-           for (ident, fuzzer, sut, cost, batch) in self.controller.iter_running_jobs():
-               self.send_message('new_fuzz_job', dict(ident=ident, fuzzer=fuzzer, sut=sut, cost=cost, batch=batch))
+            for job in dict(self.wui.jobs).values():
+                self.send_message('new_{type}_job'.format(type=job['type']), job)
 
         elif action == 'get_issue':
             issue_dict = self.controller.db.find_issue_by_id(request['_id'])
@@ -77,6 +77,20 @@ class SocketHandler(websocket.WebSocketHandler):
 
         elif action == 'delete_issue':
             self.controller.db.remove_issue_by_id(request['_id'])
+
+        elif action == 'reduce_issue':
+            issue = self.controller.db.find_issue_by_id(request['_id'])
+            if self.wui.controller.config.has_section('sut.' + issue['sut']):
+                self.controller.add_reduce_job(issue)
+            else:
+                logger.warning('Reduce is not possible. Config has no section {name}.'.format(name='sut.' + issue['sut']))
+
+        elif action == 'validate_issue':
+            issue = self.controller.db.find_issue_by_id(request['_id'])
+            if self.wui.controller.config.has_section('sut.' + issue['sut']):
+                self.controller.validate(issue)
+            else:
+                logger.warning('Validate is not possible. Config has no section {name}.'.format(name='sut.' + issue['sut']))
 
         else:
             logger.warning('ERROR: Invalid {action} message!'.format(action=action))
@@ -104,16 +118,11 @@ class IssueHandler(web.RequestHandler):
 
     def get(self, issue_id):
         issue = self.db.find_issue_by_id(issue_id)
-        formatter = self._load_formatter(issue['sut'])
+        formatter = config_get_callable(self.config, 'sut.' + issue['sut'], ['wui_formatter', 'formatter'])[0] or JsonFormatter
         issue_json = json.dumps(issue, cls=ObjectIdEncoder)
         issue_body = formatter(issue, format='long')
         self.render('issue.html', active_page='issue', issue=issue, issue_json=issue_json, issue_body=issue_body)
 
-    def _load_formatter(self, sut):
-        if self.config.has_option('fuzzinator.wui.issue.formatter', 'wui_formatter'):
-            return config_get_callable(self.config, 'fuzzinator.wui.issue.formatter', 'wui_formatter')[0]
-
-        return JsonFormatter
 
 class StatsHandler(web.RequestHandler):
     def __init__(self, *args, **kwargs):
@@ -147,6 +156,7 @@ class Wui(EventListener):
                 ], autoreload=False, **settings)
         self.server = self.app.listen(port)
         self.socket_list = []
+        self.jobs = Manager().dict()
 
     def registerSignals(self):
         signal.signal(signal.SIGTERM, partial(self.sig_handler, self))
@@ -167,21 +177,31 @@ class Wui(EventListener):
             wsSocket.send_message(action, data)
 
     def new_fuzz_job(self, **kwargs):
+        self.jobs[kwargs['ident']] = dict(kwargs, status='inactive', type='fuzz')
         self.send_message('new_fuzz_job', kwargs)
 
     def new_reduce_job(self, **kwargs):
+        self.jobs[kwargs['ident']] = dict(kwargs, status='inactive', type='reduce')
         self.send_message('new_reduce_job', kwargs)
 
     def new_update_job(self, **kwargs):
+        self.jobs[kwargs['ident']] = dict(kwargs, status='inactive', type='update')
         self.send_message('new_update_job', kwargs)
 
+    def new_validate_job(self, **kwargs):
+        self.jobs[kwargs['ident']] = dict(kwargs, status='inactive', type='validate')
+        self.send_message('new_validate_job', kwargs)
+
     def job_progress(self, **kwargs):
+        self.jobs[kwargs['ident']]['progress'] = kwargs['progress']
         self.send_message('job_progress', kwargs)
 
     def remove_job(self, **kwargs):
+        del self.jobs[kwargs['ident']]
         self.send_message('remove_job', kwargs)
 
     def activate_job(self, **kwargs):
+        self.jobs[kwargs['ident']] = dict(self.jobs[kwargs['ident']], status='active')
         self.send_message('activate_job', kwargs)
 
     def new_issue(self, **kwargs):
