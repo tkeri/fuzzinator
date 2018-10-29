@@ -107,14 +107,20 @@ class IssueHandler(web.RequestHandler):
         formatter = self._load_formatter(issue['sut'])
         issue_json = json.dumps(issue, cls=ObjectIdEncoder)
         issue_body = formatter(issue, format='long')
-        print(formatter, issue_body)
-        self.render('issue.html', issue=issue, issue_json=issue_json, issue_body=issue_body)
+        self.render('issue.html', active_page='issue', issue=issue, issue_json=issue_json, issue_body=issue_body)
 
     def _load_formatter(self, sut):
         if self.config.has_option('fuzzinator.wui.issue.formatter', 'wui_formatter'):
             return config_get_callable(self.config, 'fuzzinator.wui.issue.formatter', 'wui_formatter')[0]
 
         return JsonFormatter
+
+class StatsHandler(web.RequestHandler):
+    def __init__(self, *args, **kwargs):
+        super(StatsHandler, self).__init__(*args, **kwargs)
+
+    def get(self):
+        self.render('stats.html', active_page='stats')
 
 # route to index.html
 class IndexHandler(web.RequestHandler):
@@ -124,7 +130,7 @@ class IndexHandler(web.RequestHandler):
         super(IndexHandler, self).__init__(*args, **kwargs)
 
     def get(self):
-        self.render('index.html')
+        self.render('index.html', active_page='issues')
 
 
 class Wui(EventListener):
@@ -136,6 +142,7 @@ class Wui(EventListener):
         self.app = web.Application([
                     (r'/', IndexHandler, dict(db=controller.db)),
                     (r'/issue/([0-9a-f]{24})', IssueHandler, dict(db=controller.db, config=controller.config)),
+                    (r'/stats', StatsHandler),
                     (r'/websocket', SocketHandler, dict(controller=controller, wui=self))
                 ], autoreload=False, **settings)
         self.server = self.app.listen(port)

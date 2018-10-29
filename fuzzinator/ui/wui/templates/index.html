@@ -1,30 +1,11 @@
 {% extends "base.html" %}
 {% block body %}
-        <main role="main" class="container-fluid">
-      <div class="row">
-
-        <div class="col-lg-9">
-          <ul class="nav nav-tabs" id="mainTab" role="tablist">
-            <li class="nav-item">
-              <a class="nav-link active" id="issues-tab" data-toggle="tab" href="#issues" role="tab" aria-controls="issues" aria-selected="true">Issues</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="stats-tab" data-toggle="tab" href="#stats" role="tab" aria-controls="stats" aria-selected="false">Stats</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link disabled invisible" id="chevron-tab" role="tab" aria-selected="false"><i class="material-icons md-18 align-text-top">chevron_right</i></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link invisible" id="issue-tab" data-toggle="tab" href="#issue" role="tab" aria-controls="issue" aria-selected="false">Issue</a>
-            </li>
-          </ul>
-          <div class="tab-content" id="mainTabContent">
             <div class="tab-pane show active" id="issues" role="tabpanel" aria-labelledby="issues-tab">
               <template id="issue-card-template">
                 <!-- issue card start -->
                 <div class="card container-fluid border-light mb-1 pl-2 bg-warning rounded-0">
                   <div class="row bg-white ml-0">
-                    <div class="col-10 order-1 col-md-10 text-truncate"><i class="material-icons md-18 align-text-top">priority_high</i> <span class="issue-id" data-togle="tool-tip" title=""></span></div>
+                    <div class="col-10 order-1 col-md-10 text-truncate"><i class="material-icons md-18 align-text-top">priority_high</i> <span class="issue-id" data-togle="tool-tip" title=""><a class="issue-ref" style="color:#6c757d"></a></span></div>
                     <div class="col-12 order-3 col-md-3 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">my_location</i> <span class="sut-id"></span></div>
                     <div class="col-12 order-4 col-md-3 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">shuffle</i> <span class="fuzzer-id"></span></div>
                     <div class="col-12 order-5 col-md-4 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">date_range</i> <span class="date_range"></span></div>
@@ -47,9 +28,7 @@
                 </div>
                 <!-- issue card end -->
               </template>
-
             </div>
-
             <div class="tab-pane" id="stats" role="tabpanel" aria-labelledby="stats-tab">
               <template id="stat-card-template">
                 <!-- stat card start -->
@@ -64,7 +43,6 @@
                 <!-- stat card end -->
               </template>
             </div>
-
             <!-- issue card start -->
             <template id="issue-details-template">
               <div class="card issue-content container-fluid border-light mb-1 pl-2 bg-warning rounded-0">
@@ -95,83 +73,4 @@
 
             <div class="tab-pane" id="issue" role="tabpanel" aria-labelledby="issue-tab">
             </div>
-
-          </div>
-        </div>
-
-        <div class="col-lg-3 order-lg-first">
-          <ul class="nav nav-tabs" id="sideTab" role="tablist">
-            <li class="nav-item">
-              <a class="nav-link active" id="jobs-tab" data-toggle="tab" href="#jobs" role="tab" aria-controls="jobs" aria-selected="true">Jobs</a>
-            </li>
-          </ul>
-          <div class="tab-content" id="sideTabContent">
-            <div class="tab-pane show active" id="jobs" role="tabpanel" aria-labelledby="jobs-tab">
-
-              <template id="fuzz-job-template">
-                <!-- fuzzer job card begin -->
-                <div class="card container-fluid border-light mb-1 pl-2 bg-secondary rounded-0">
-                  <div class="row bg-white ml-0">
-                    <div class="col-12 text-truncate"><i class="material-icons md-18 align-text-top">shuffle</i><span class="fuzz-job-id"> </span></div>
-                    <div class="col-12 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">shuffle</i><span class="fuzz-job-fuzzer"> </span></div>
-                    <div class="col-12 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">my_location</i><span class="fuzz-job-sut"> </span></div>
-                    <div class="col-12 text-truncate text-secondary small">
-                      <div class="progress">
-                        <div class="progress-bar" style="width: 0%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" data-valuemax="">0%</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <!-- fuzzer job card end -->
-              </template>
-
-              <template id="reduce-job-template">
-                <!-- reduce job card begin -->
-                <div class="card container-fluid border-light mb-1 pl-2 bg-info rounded-0">
-                  <div class="row bg-white ml-0">
-                    <div class="col-12 text-truncate"><i class="material-icons md-18 align-text-top">crop</i> <span class="reduce-job-id"> </span></div>
-                    <div class="col-12 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">my_location</i> <span class="reduce-job-sut"> </span></div>
-                    <div class="col-12 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">priority_high</i> <span class="reduce-job-issue"> </span></div>
-                    <div class="col-12 text-truncate text-secondary small">
-                      <div class="progress">
-                        <div class="progress-bar" style="width: 0%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" data-valuemax="">0%</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <!-- reduce job card end -->
-              </template>
-
-              <template id="update-job-template">
-                <!-- update job card begin -->
-                <!-- note: it seems that an update job cannot report progress -->
-                <div class="card container-fluid border-light mb-1 pl-2 bg-info rounded-0">
-                  <div class="row bg-white ml-0">
-                    <div class="col-12 text-truncate"><i class="material-icons md-18 align-text-top">update</i><span class="update-job-id"> </span></div>
-                    <div class="col-12 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">my_location</i> <span class="update-job-sut"> </span></div>
-                  </div>
-                </div>
-                <!-- update job card end -->
-              </template>
-
-              <template id="validate-job-template">
-                <!-- validate job card begin -->
-                <!-- note: it seems that a validate job cannot report progress -->
-                <!-- note: it seems that a validate job doesn't even appear in the list of jobs -->
-                <div class="card container-fluid border-light mb-1 pl-2 bg-info rounded-0">
-                  <div class="row bg-white ml-0">
-                    <div class="col-12 text-truncate"><i class="material-icons md-18 align-text-top">replay</i> <span class="validate-job-id"> </span></div>
-                    <div class="col-12 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">my_location</i> <span class="validate-job-sut"> </span></div>
-                    <div class="col-12 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">priority_high</i> <span class="validate-job-issue"> </span></div>
-                  </div>
-                </div>
-                <!-- validate job card end -->
-              </template>
-
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </main>
 {% end body %}

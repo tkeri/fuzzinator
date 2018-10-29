@@ -221,7 +221,7 @@ class Controller(object):
         fuzz_idx = 0
         try:
             while True:
-                self._wait_for_load(0, running_jobs)
+#                self._wait_for_load(0, running_jobs)
 
                 if fuzz_idx == 0:
                     cycle += 1

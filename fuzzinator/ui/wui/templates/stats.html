@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block body %}
+<!-- stats content -->
+        <div class="" id="stats"  aria-labelledby="stats-tab">
+          <template id="stat-card-template">
+            <!-- stat card start -->
+            <div class="card container-fluid border-light mb-1 pl-2 bg-info rounded-0">
+              <div class="row bg-white ml-0">
+                <div class="col-12 col-md-6 text-truncate"><i class="material-icons md-18 align-text-top">shuffle</i><span class="fuzzer"> </span></div>
+                <div class="col-12 col-md-2 text-truncate"><i class="material-icons md-18 align-text-top">repeat</i><span class="executed"> </span></div>
+                <div class="col-12 col-md-2 text-truncate"><i class="material-icons md-18 align-text-top">error_outline</i><span class="failed"> </span></div>
+                <div class="col-12 col-md-2 text-truncate"><i class="material-icons md-18 align-text-top">priority_high</i><span class="unique"> </span></div>
+              </div>
+            </div>
+            <!-- stat card end -->
+          </template>
+        </div>
+{% end body %}

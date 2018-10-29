@@ -35,8 +35,9 @@ function startWebsocket() {
                 Object.keys(data).forEach(function(k){
                     var content = document.querySelector("#issue-card-template").content.cloneNode(true);
                     content.querySelector(".card").id = data[k]._id;
-                    content.querySelector(".issue-id").textContent = data[k].id;
                     content.querySelector(".issue-id").setAttribute("onclick", "open_issue('" + data[k]._id + "')");
+                    content.querySelector(".issue-ref").textContent = data[k].id;
+                    content.querySelector(".issue-ref").setAttribute("href", "/issue/" + data[k]._id);
                     content.querySelector(".delete-issue").setAttribute("onclick", "delete_issue('" + data[k]._id + "')");
                     content.querySelector(".issue-id").setAttribute("title", data[k].id);
                     content.querySelector(".sut-id").textContent = data[k].sut;
@@ -152,13 +153,15 @@ function startWebsocket() {
 };
 
 function updateContent() {
-    ws.send(JSON.stringify({"action": 'get_issues'}));
     ws.send(JSON.stringify({"action": 'get_jobs'}));
-    ws.send(JSON.stringify({"action": 'get_stats'}));
+    switch(active_page) {
+        case "issues": ws.send(JSON.stringify({"action": 'get_issues'})); break;
+        case "stats": ws.send(JSON.stringify({"action": 'get_stats'})); break;
+        default: break;
+    }
 };
 
 startWebsocket();
-//var content_update =  setInterval(updateContent, 4000);
 
 function expandAll() {
     $('.panel-collapse').collapse('show');
