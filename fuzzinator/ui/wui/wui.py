@@ -64,7 +64,15 @@ class SocketHandler(websocket.WebSocketHandler):
             self.send_message('get_stats', self.controller.db.stat_snapshot(None))
 
         elif action == 'get_issues':
-            self.send_message('get_issues', self.controller.db.all_issues())
+            page_number = request['data'] if 'data' in request else 1
+            issues_size = len(self.controller.db.all_issues())
+            issues = self.controller.db.issue_page(page_number)
+            issue_page = {
+                    'issues_size': issues_size,
+                    'issues': issues,
+                    'page_id': page_number
+            }
+            self.send_message('get_issues', issue_page)
 
         elif action == 'get_jobs':
             for job in dict(self.wui.jobs).values():
@@ -120,7 +128,7 @@ class IssueHandler(web.RequestHandler):
         issue = self.db.find_issue_by_id(issue_id)
         formatter = config_get_callable(self.config, 'sut.' + issue['sut'], ['wui_formatter', 'formatter'])[0] or JsonFormatter
         issue_json = json.dumps(issue, cls=ObjectIdEncoder)
-        issue_body = formatter(issue, format='long')
+        issue_body = formatter(issue=issue, format='long')
         self.render('issue.html', active_page='issue', issue=issue, issue_json=issue_json, issue_body=issue_body)
 
 

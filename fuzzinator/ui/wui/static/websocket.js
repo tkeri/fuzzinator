@@ -3,10 +3,20 @@ function startWebsocket() {
     ws = new WebSocket("ws://" + window.location.host + "/websocket");
     ws.onopen = function () {
         updateContent();
+        var status_dot = document.querySelector('.websocket-status');
+        status_dot.title = 'online';
+        status_dot.classList.add('bg-ok');
+    };
+    ws.onclose = function() {
+        var status_dot = document.querySelector('.websocket-status');
+        status_dot.title = 'offline';
+        status_dot.classList.remove('bg-ok');
     };
 
     ws.onmessage = function (evt) {
         var msg = JSON.parse(evt.data);
+        // TODO: debug print
+        console.log(msg);
         var action = msg.action;
         var data = msg.data;
         switch (action) {
@@ -32,25 +42,54 @@ function startWebsocket() {
                 break;
 
             case "get_issues":
-                Object.keys(data).forEach(function(k){
+                var i = 0;
+                var issues_size = data.issues_size;
+                var counter = issues_size / 10;
+                var issues = data.issues;
+                var page_id = data.page_id;
+                var prev_issues = document.querySelectorAll('.issues-entry');
+                var prev_paginations = document.querySelectorAll('.paginations-entry');
+
+                if (prev_issues) {
+                    prev_issues.forEach(function(issue_entry) { issue_entry.remove(); });
+                }
+                if (prev_paginations) {
+                    prev_paginations.forEach(function(pagination_entry) { pagination_entry.remove(); });
+                }
+
+                Object.keys(issues).forEach(function(k){
                     var content = document.querySelector("#issue-card-template").content.cloneNode(true);
-                    content.querySelector(".card").id = data[k]._id;
-                    content.querySelector(".reduce-issue").setAttribute("onclick", "reduce_issue('" + data[k]._id + "')");
-                    content.querySelector(".validate-issue").setAttribute("onclick", "validate_issue('" + data[k]._id + "')");
-                    content.querySelector(".issue-ref").textContent = data[k].id;
-                    content.querySelector(".issue-ref").setAttribute("href", "/issue/" + data[k]._id);
-                    content.querySelector(".delete-issue").setAttribute("onclick", "delete_issue('" + data[k]._id + "')");
-                    content.querySelector(".issue-id").setAttribute("title", data[k].id);
-                    content.querySelector(".sut-id").textContent = data[k].sut;
-                    content.querySelector(".fuzzer-id").textContent = data[k].fuzzer;
-                    content.querySelector(".date_range").textContent = data[k].first_seen + " .. " + data[k].last_seen;
-                    content.querySelector(".count").textContent = data[k].count;
-                    if (data[k].reduced)
+                    content.firstElementChild.classList.add('issues-entry');
+                    content.querySelector(".card").id = issues[k]._id;
+                    content.querySelector(".reduce-issue").setAttribute("onclick", "reduce_issue('" + issues[k]._id + "')");
+                    content.querySelector(".validate-issue").setAttribute("onclick", "validate_issue('" + issues[k]._id + "')");
+                    content.querySelector(".issue-ref").textContent = issues[k].id;
+                    content.querySelector(".issue-ref").setAttribute("href", "/issue/" + issues[k]._id);
+                    content.querySelector(".delete-issue").setAttribute("onclick", "delete_issue('" + issues[k]._id + "')");
+                    content.querySelector(".issue-id").setAttribute("title", issues[k].id);
+                    content.querySelector(".sut-id").textContent = issues[k].sut;
+                    content.querySelector(".fuzzer-id").textContent = issues[k].fuzzer;
+                    content.querySelector(".date_range").textContent = issues[k].first_seen + " .. " + issues[k].last_seen;
+                    content.querySelector(".count").textContent = issues[k].count;
+                    if (issues[k].reduced)
                         content.querySelector(".reduced").textContent = 'crop';
-                    if (data[k].reported)
+                    if (issues[k].reported)
                         content.querySelector(".reported").textContent = 'link';
                     $("#issues").append(document.importNode(content, true));
                  });
+
+                do {
+                    i++;
+                    var content = document.querySelector("#pagination-card-template").content.cloneNode(true);
+                    if (i == page_id) {
+                        content.firstElementChild.classList.add('active');
+                    }
+                    content.firstElementChild.classList.add('paginations-entry');
+                    content.querySelector(".page-link").text = i;
+                    content.querySelector(".page-item").setAttribute("onmousedown", "paginationIssues(" + i + ")");
+                    content.querySelector(".page-item").setAttribute("id", "page_" + i);
+                    $("#pagination-buttons").append(document.importNode(content, true));
+                } while (i < counter);
                 break;
 
             case "get_issue":
@@ -171,8 +210,7 @@ function startWebsocket() {
                     content.querySelector(".reduced").textContent = 'crop';
                 if (data.reported)
                     content.querySelector(".reported").textContent = 'link';
-                var issue_list = document.querySelector("#issues");
-                issue_list.appendChild(document.importNode(content, true));
+                $("#issues").prepend(document.importNode(content, true));
                 fire_work();
                 break;
         }
@@ -197,3 +235,11 @@ function expandAll() {
 function collapseAll() {
     $('.panel-collapse').collapse('hide');
 };
+
+function paginationIssues(page) {
+    document.querySelector(".paginations-entry.active").classList.remove("active");
+    document.querySelector("#page_" + page).classList.add("active");
+    ws.send(JSON.stringify({"action": 'get_issues', "data": page}));
+    console.log(page);
+};
+

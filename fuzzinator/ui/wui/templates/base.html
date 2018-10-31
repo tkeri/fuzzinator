@@ -23,8 +23,9 @@
   <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
     <a class="navbar-brand font-weight-bold" href="#"><span class="fz-brand">F</span><span class="fz-brand">u</span><span class="fz-brand">z</span><span class="fz-brand">z</span><span class="fz-brand">i</span><span class="fz-brand">n</span><span class="fz-brand">a</span><span class="fz-brand">t</span><span class="fz-brand">o</span><span class="fz-brand">r</span></a>
     <span class="navbar-text">
-      In Bug We Trust.
+      In Bug We Trust
     </span>
+    <span class="websocket-status dot bg-error" data-togle="tool-tip" title=""></span>
   </nav>
     <main role="main" class="container-fluid">
       <div class="row">
@@ -162,6 +163,17 @@
       $('#chevron-tab').addClass('invisible');
       $(e.target).addClass('invisible');
     });
+
+    // TODO: use jquery instead of 'mousedown'. Maybe there is a document ready problem.
+    /*
+    $(document).ready(function() {
+      $(function() {
+        $("li").click(function() {
+          console.log($(this).text())
+        });
+     });
+    });
+    */
   </script>
 </body>
 </html>

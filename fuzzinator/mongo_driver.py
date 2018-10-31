@@ -65,6 +65,9 @@ class MongoDriver(object):
     def find_issues_by_suts(self, suts):
         return list(self._db.fuzzinator_issues.find({'sut': {'$in': suts}}))
 
+    def issue_page(self, page_number=1, page_size=10, sort_field='last_seen'):
+        return list(self._db.fuzzinator_issues.find().sort(sort_field).skip(page_size * (page_number - 1)).limit(page_size))
+
     def update_issue(self, issue, _set):
         self._db.fuzzinator_issues.update_one({'id': issue['id'], 'sut': issue['sut']}, {'$set': _set})
 
