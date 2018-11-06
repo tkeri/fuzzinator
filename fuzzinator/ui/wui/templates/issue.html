@@ -8,39 +8,5 @@
             </li>
 {% end nav  %}
 {% block body %}
-  <script>var issue_data = {% raw issue_json %}; </script>
-  <div class="container">
-    <a href="/"><i class="fab fa-houzz" id="houzz" data-toggle="tool-tip" title="home"></i></a>
-    <i onclick="collapseAll()" class="fas fa-angle-double-up expand" data-toggle="tool-tip" title="collapse all"></i>
-    <i onclick="expandAll()" class="fas fa-angle-double-down expand" data-toggle="tool-tip" title="expand all"></i>
-    <div class="panel-group">
-      <div class="list-group">
-        <li class="list-group-item"><b>_id: </b>{{ issue['_id'] }}</li>
-        {% if 'id' in issue %}
-          <li class="list-group-item"><b>id: </b>{{ issue['id'] }}</li>
-        {% end %}
-        {% if 'sut' in issue %}
-          <li class="list-group-item"><b>sut: </b>{{ issue['sut'] }}</li>
-        {% end %}
-        {% if 'reduced' in issue %}
-          <li class="list-group-item"><b>reduced: </b>{% if not issue['reduced'] is None %} <i class="far fa-check-circle"></i> {% else %} <i class="far fa-times-circle"></i> {% end %} </li>
-        {% end %}
-        {% if 'reported' in issue %}
-          <li class="list-group-item"><b>reported: </b>{% if issue['reported'] %} <i class="far fa-check-circle"></i> {% else %} <i class="far fa-times-circle"></i> {% end %} </li>
-        {% end %}
-        {% if 'first_seen' in issue %}
-          <li class="list-group-item"><b>first_seen: </b>{{ issue['first_seen'] }}</li>
-        {% end %}
-        {% if 'last_seen' in issue %}
-          <li class="list-group-item"><b>last_seen: </b>{{ issue['last_seen'] }}</li>
-        {% end %}
-        {% if 'count' in issue %}
-          <li class="list-group-item"><b>count: </b>{{ issue['count'] }}</li>
-        {% end %}
-      </div>
-    </div>
-  </div>
-
-  <h2>ISSUE MARKDOWN</h2>
   {% raw issue_body %}
 {% end body %}

@@ -14,19 +14,19 @@
     <!-- Fuzzinator CSS -->
     <link rel="stylesheet" href="/static/common.css" type="text/css"/>
 
-  <script type="text/javascript">var active_page = "{{ active_page }}";</script>
+    <script type="text/javascript">var active_page = "{{ active_page }}";</script>
 
     <title>Fuzzinator</title>
   </head>
 
-<body>
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand font-weight-bold" href="#"><span class="fz-brand">F</span><span class="fz-brand">u</span><span class="fz-brand">z</span><span class="fz-brand">z</span><span class="fz-brand">i</span><span class="fz-brand">n</span><span class="fz-brand">a</span><span class="fz-brand">t</span><span class="fz-brand">o</span><span class="fz-brand">r</span></a>
-    <span class="navbar-text">
-      In Bug We Trust
-    </span>
-    <span class="websocket-status dot bg-error" data-togle="tool-tip" title=""></span>
-  </nav>
+  <body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand font-weight-bold" href="#"><span class="fz-brand">F</span><span class="fz-brand">u</span><span class="fz-brand">z</span><span class="fz-brand">z</span><span class="fz-brand">i</span><span class="fz-brand">n</span><span class="fz-brand">a</span><span class="fz-brand">t</span><span class="fz-brand">o</span><span class="fz-brand">r</span></a>
+      <span class="navbar-text">
+        In Bug We Trust
+      </span>
+      <span class="websocket-status dot bg-error" data-togle="tool-tip" title=""></span>
+    </nav>
     <main role="main" class="container-fluid">
       <div class="row">
         <div class="col-lg-9">
@@ -119,61 +119,43 @@
         </div> <!--col lg 3 -->
       </div> <!--row-->
     </main>
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script type="text/javascript" src="../static/websocket.js"></script>
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script type="text/javascript" src="../static/websocket.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
-  <script>
-    /* NOTE: right now, this is triggered on a click, but should be triggered by the 'new issue' event */
-    $('.navbar-brand').click(function () {
-      fire_work();
-    });
+    <script>
+      /* NOTE: right now, this is triggered on a click, but should be triggered by the 'new issue' event */
+      $('.navbar-brand').click(function () {
+        fire_work();
+      });
 
-    function fire_work() {
-      $('.fz-brand').addClass('fz-brand-fireworks');
-        $('.fz-brand').one('animationend', function(event) {
-          $(this).removeClass('fz-brand-fireworks')
-        });
-    }
+      function fire_work() {
+        $('.fz-brand').addClass('fz-brand-fireworks');
+          $('.fz-brand').one('animationend', function(event) {
+            $(this).removeClass('fz-brand-fireworks')
+          });
+      }
 
-    /*function open_issue(issue_id) {
-      $('#chevron-tab').removeClass('invisible');
-      $('#issue-tab').removeClass('invisible');
-      $('#issue-tab').tab('show');
-      //ws.send(JSON.stringify({"action": 'get_issue', "_id": issue_id}));
-    }*/
+      function delete_issue(issue_id) {
+        $("#" + issue_id).remove();
+        ws.send(JSON.stringify({"action": 'delete_issue', "_id": issue_id}));
+      }
 
-    function delete_issue(issue_id) {
-      $("#" + issue_id).remove();
-      ws.send(JSON.stringify({"action": 'delete_issue', "_id": issue_id}));
-    }
+      function reduce_issue(issue_id) {
+        console.log('reduce issue', issue_id);
+        ws.send(JSON.stringify({"action": 'reduce_issue', "_id": issue_id}));
+      }
 
-    function reduce_issue(issue_id) {
-      console.log('reduce issue', issue_id);
-      ws.send(JSON.stringify({"action": 'reduce_issue', "_id": issue_id}));
-    }
+      function validate_issue(issue_id) {
+        ws.send(JSON.stringify({"action": 'validate_issue', "_id": issue_id}));
+      }
 
-    function validate_issue(issue_id) {
-      ws.send(JSON.stringify({"action": 'validate_issue', "_id": issue_id}));
-    }
-
-    $('#issue-tab').on('hidden.bs.tab', function (e) {
-      $('#chevron-tab').addClass('invisible');
-      $(e.target).addClass('invisible');
-    });
-
-    // TODO: use jquery instead of 'mousedown'. Maybe there is a document ready problem.
-    /*
-    $(document).ready(function() {
-      $(function() {
-        $("li").click(function() {
-          console.log($(this).text())
-        });
-     });
-    });
-    */
-  </script>
-</body>
+      $('#issue-tab').on('hidden.bs.tab', function (e) {
+        $('#chevron-tab').addClass('invisible');
+        $(e.target).addClass('invisible');
+      });
+    </script>
+  </body>
 </html>

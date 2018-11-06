@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 class ObjectIdEncoder(json.JSONEncoder):
+
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.strftime("%Y-%m-%d %H:%M:%S")
@@ -46,6 +47,7 @@ class ObjectIdEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 class SocketHandler(websocket.WebSocketHandler):
+
     def __init__(self, *args, **kwargs):
         self.wui = kwargs.pop('wui')
         self.controller = kwargs.pop('controller')
@@ -61,7 +63,8 @@ class SocketHandler(websocket.WebSocketHandler):
         request = json.loads(message)
         action = request['action']
         if action == 'get_stats':
-            self.send_message('get_stats', self.controller.db.stat_snapshot(None))
+            self.send_message('get_stats',
+                              self.controller.db.stat_snapshot(None))
 
         elif action == 'get_issues':
             page_number = request['data'] if 'data' in request else 1
@@ -117,8 +120,8 @@ class SocketHandler(websocket.WebSocketHandler):
             logger.error(e)
             self.on_close()
 
-
 class IssueHandler(web.RequestHandler):
+
     def __init__(self, *args, **kwargs):
         self.db = kwargs.pop('db')
         self.config = kwargs.pop('config')
@@ -131,8 +134,8 @@ class IssueHandler(web.RequestHandler):
         issue_body = formatter(issue=issue, format='long')
         self.render('issue.html', active_page='issue', issue=issue, issue_json=issue_json, issue_body=issue_body)
 
-
 class StatsHandler(web.RequestHandler):
+
     def __init__(self, *args, **kwargs):
         super(StatsHandler, self).__init__(*args, **kwargs)
 
@@ -148,7 +151,6 @@ class IndexHandler(web.RequestHandler):
 
     def get(self):
         self.render('index.html', active_page='issues')
-
 
 class Wui(EventListener):
 
@@ -254,8 +256,6 @@ class Wui(EventListener):
         logger.warning('Caught signal: %s', sig)
         io_loop.add_callback_from_signal(shutdown)
 
-
-
 def execute(args=None, parser=None):
     parser = build_parser(parent=parser)
     arguments = parser.parse_args(args)
@@ -264,13 +264,16 @@ def execute(args=None, parser=None):
         parser.error(error_msg)
 
     port = int(config_get_with_writeback(arguments.config, 'fuzzinator.wui', 'port', '8080'))
-    print('You can open wui on http://localhost:{port}'.format(port=port))
+
+    print('On Windows you have to query the IP of the VM first with the `docker-machine ip` command.')
+    print('Then open that IP with the port, usually it is: http://192.168.99.100:{port}.'.format(port=port))
+    print('On Linux you can open wui on http://localhost:{port}'.format(port=port))
+
     settings = dict(
         template_path = os.path.join(os.path.dirname(__file__), 'templates'),
         static_path = os.path.join(os.path.dirname(__file__), 'static'),
         debug = True
     )
-
     controller = Controller(config=arguments.config)
     wui = Wui(controller, settings, port)
     controller.listener += WuiListener(wui.events, wui.lock)

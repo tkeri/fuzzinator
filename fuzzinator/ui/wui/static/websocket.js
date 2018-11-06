@@ -126,7 +126,7 @@ function startWebsocket() {
                 var new_node = document.importNode(content, true);
                 new_node.querySelector('.card').id = 'job-' + data.ident;
                 if (data.status == 'active') {
-                    new_node.querySelector('.card').classList.add('bg-info')
+                    new_node.querySelector('.card').classList.add('bg-info');
                 }
                 $("#jobs").append(new_node);
                 break;
@@ -140,7 +140,7 @@ function startWebsocket() {
                 content.querySelector(".progress-bar").setAttribute("data-maxvalue", data.size);
                 var new_node = document.importNode(content, true);
                 if (data.status == 'active') {
-                    new_node.querySelector('.card').classList.add('bg-info')
+                    new_node.querySelector('.card').classList.add('bg-info');
                 }
                 $("#jobs").append(new_node);
                 break;
@@ -152,7 +152,7 @@ function startWebsocket() {
                 content.querySelector(".update-job-sut").textContent = data.sut;
                 var new_node = document.importNode(content, true);
                 if (data.status == 'active') {
-                    new_node.querySelector('.card').classList.add('bg-info')
+                    new_node.querySelector('.card').classList.add('bg-info');
                 }
                 $("#jobs").append(new_node);
                 break;
@@ -165,7 +165,7 @@ function startWebsocket() {
                 content.querySelector(".validate-job-issue").textContent = data.issue_id;
                 var new_node = document.importNode(content, true);
                 if (data.status == 'active') {
-                    new_node.querySelector('.card').classList.add('bg-info')
+                    new_node.querySelector('.card').classList.add('bg-info');
                 }
                 $("#jobs").append(new_node);
                 break;
@@ -227,14 +227,6 @@ function updateContent() {
 };
 
 startWebsocket();
-
-function expandAll() {
-    $('.panel-collapse').collapse('show');
-};
-
-function collapseAll() {
-    $('.panel-collapse').collapse('hide');
-};
 
 function paginationIssues(page) {
     document.querySelector(".paginations-entry.active").classList.remove("active");
