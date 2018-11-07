@@ -1,73 +1,178 @@
 {% extends "base.html" %}
 {% block body %}
-  <div class="container" id="header">
-    <div class="jumbotron" id="jumbo">
-      <h1>Fuzzinator<span id="bug_we_trust">In Bug We Trust.</span></h1>
-    </div>
-  </div>
-  <div class="fluid-container">
-    <div class="row">
-      <div class="col-sm-3" id="job_container"> <!--left-->
-        <div class="container">
-         <!-- Jobs -->
-        </div>
-      </div>
-      <div class="col-sm-9"><!--right-->
-        <div class="container issue_container">
-          <!-- Nav tabs -->
-          <ul class="nav nav-tabs" role="tablist">
+        <main role="main" class="container-fluid">
+      <div class="row">
+
+        <div class="col-lg-9">
+          <ul class="nav nav-tabs" id="mainTab" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active issue_stat_tab" data-toggle="tab" href="#menu_issues">Issues</a>
+              <a class="nav-link active" id="issues-tab" data-toggle="tab" href="#issues" role="tab" aria-controls="issues" aria-selected="true">Issues</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link issue_stat_tab" data-toggle="tab" href="#menu_stats">Stats</a>
+              <a class="nav-link" id="stats-tab" data-toggle="tab" href="#stats" role="tab" aria-controls="stats" aria-selected="false">Stats</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled invisible" id="chevron-tab" role="tab" aria-selected="false"><i class="material-icons md-18 align-text-top">chevron_right</i></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link invisible" id="issue-tab" data-toggle="tab" href="#issue" role="tab" aria-controls="issue" aria-selected="false">Issue</a>
             </li>
           </ul>
-          <!-- Tab panes -->
-          <div class="tab-content">
-            <!-- Issues -->
-            <div id="menu_issues" class="tab-pane active menu_issues">
-              <div class="container issue_container">
-                <div class="row" style="margin-right: 0px">
-                  <div class="col-sm head_id">Issue ID</div>
-                  <div class="col-sm head_fuzzer">Fuzzer</div>
-                  <div class="col-sm head_seen">First seen</div>
-                  <div class="col-sm head_count">
-                    <div class="row">
-                      <div class="col-sm head_reported">Count</div>
-                      <div class="col-sm head_reported">Reduced</div>
-                      <div class="col-sm head_reported">Reported</div>
+          <div class="tab-content" id="mainTabContent">
+            <div class="tab-pane show active" id="issues" role="tabpanel" aria-labelledby="issues-tab">
+              <template id="issue-card-template">
+                <!-- issue card start -->
+                <div class="card container-fluid border-light mb-1 pl-2 bg-warning rounded-0">
+                  <div class="row bg-white ml-0">
+                    <div class="col-10 order-1 col-md-10 text-truncate"><i class="material-icons md-18 align-text-top">priority_high</i> <span class="issue-id" data-togle="tool-tip" title=""></span></div>
+                    <div class="col-12 order-3 col-md-3 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">my_location</i> <span class="sut-id"></span></div>
+                    <div class="col-12 order-4 col-md-3 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">shuffle</i> <span class="fuzzer-id"></span></div>
+                    <div class="col-12 order-5 col-md-4 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">date_range</i> <span class="date_range"></span></div>
+                    <div class="col-12 order-6 col-md-2 text-nowrap text-md-right text-secondary small"><i class="material-icons md-14 align-text-top">repeat</i><span class="count"></span></div>
+                    <div class="col-2 order-2 col-md-2 text-nowrap text-right text-secondary small">
+                      <i class="reduced material-icons md-14 align-text-top" title="reduced"></i>
+                      <i class="reported material-icons md-14 align-text-top" title="reported"></i>
+                      <div class="btn-group dropleft">
+                        <button class="btn btn-light btn-sm dropdown-toggle pl-1 pr-3" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                        <div class="dropdown-menu m-0 p-0" style="min-width: auto" aria-labelledby="dropdownMenuButton">
+                          <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-light" title="reduce"><i class="material-icons md-14 align-text-top">crop</i></button>
+                            <button type="button" class="btn btn-light" title="validate"><i class="material-icons md-14 align-text-top">replay</i></button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="fluid-container">
-                <div class="container menu_issues">
-                  <div id="issues_body" class="list-group">
-                  <!-- issue body -->
+                <!-- issue card end -->
+              </template>
+
+            </div>
+
+            <div class="tab-pane" id="stats" role="tabpanel" aria-labelledby="stats-tab">
+              <template id="stat-card-template">
+                <!-- stat card start -->
+                <div class="card container-fluid border-light mb-1 pl-2 bg-info rounded-0">
+                  <div class="row bg-white ml-0">
+                    <div class="col-12 col-md-6 text-truncate"><i class="material-icons md-18 align-text-top">shuffle</i><span class="fuzzer"> </span></div>
+                    <div class="col-12 col-md-2 text-truncate"><i class="material-icons md-18 align-text-top">repeat</i><span class="executed"> </span></div>
+                    <div class="col-12 col-md-2 text-truncate"><i class="material-icons md-18 align-text-top">error_outline</i><span class="failed"> </span></div>
+                    <div class="col-12 col-md-2 text-truncate"><i class="material-icons md-18 align-text-top">priority_high</i><span class="unique"> </span></div>
                   </div>
                 </div>
-              </div>
+                <!-- stat card end -->
+              </template>
             </div>
-            <!-- Stats -->
-            <div id="menu_stats" class="tab-pane fade">
-              <div class="container menu_issues">
-                <div class="row">
-                  <div class="col-sm head_fuzzer">Fuzzer</div>
-                  <div class="col-sm head_exec">Exec</div>
-                  <div class="col-sm head_issues">Issues</div>
-                  <div class="col-sm head_unique">Unique</div>
+
+            <!-- issue card start -->
+              <template id="issue-details-template">
+                <div class="card issue-content container-fluid border-light mb-1 pl-2 bg-warning rounded-0">
+                  <div class="row bg-white ml-0">
+                    <div class="col-10 order-1 text-truncate"><i class="material-icons md-18 align-text-top">priority_high</i> <span class="issue-id" data-togle="tool-tip" title=""></span></div>
+                    <div class="col-12 order-3 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">my_location</i> <span class="sut-id"></span></div>
+                    <div class="col-12 order-4 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">shuffle</i> <span class="fuzzer-id"></span></div>
+                    <div class="col-12 order-5 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">date_range</i> <span class="date_range"></span></div>
+                    <div class="col-12 order-6 text-nowrap text-md-right text-secondary small"><i class="material-icons md-14 align-text-top">repeat</i><span class="count"></span></div>
+                    <div class="col-2 order-2 text-nowrap text-right text-secondary small">
+                      <i class="reduced material-icons md-14 align-text-top" title="reduced"></i>
+                      <i class="reported material-icons md-14 align-text-top" title="reported"></i>
+                      <div class="btn-group dropleft">
+                        <button class="btn btn-light btn-sm dropdown-toggle pl-1 pr-3" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                        <div class="dropdown-menu m-0 p-0" style="min-width: auto" aria-labelledby="dropdownMenuButton">
+                          <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-light" title="reduce"><i class="material-icons md-14 align-text-top">crop</i></button>
+                            <button type="button" class="btn btn-light" title="validate"><i class="material-icons md-14 align-text-top">replay</i></button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                      <ul class="backtrace list-unstyled"></ul>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div class="container menu_issues">
-                <ul id="stats_body" class="list-group">
-                  <!-- stats body -->
-                </ul>
-              </div>
+              </template>
+              <!-- issue card end -->
+
+            <div class="tab-pane" id="issue" role="tabpanel" aria-labelledby="issue-tab">
+            </div>
+
+          </div>
+        </div>
+
+        <div class="col-lg-3 order-lg-first">
+          <ul class="nav nav-tabs" id="sideTab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="jobs-tab" data-toggle="tab" href="#jobs" role="tab" aria-controls="jobs" aria-selected="true">Jobs</a>
+            </li>
+          </ul>
+          <div class="tab-content" id="sideTabContent">
+            <div class="tab-pane show active" id="jobs" role="tabpanel" aria-labelledby="jobs-tab">
+
+              <template id="fuzz-job-template">
+                <!-- fuzzer job card begin -->
+                <div class="card container-fluid border-light mb-1 pl-2 bg-secondary rounded-0">
+                  <div class="row bg-white ml-0">
+                    <div class="col-12 text-truncate"><i class="material-icons md-18 align-text-top">shuffle</i><span class="fuzz-job-id"> </span></div>
+                    <div class="col-12 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">shuffle</i><span class="fuzz-job-fuzzer"> </span></div>
+                    <div class="col-12 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">my_location</i><span class="fuzz-job-sut"> </span></div>
+                    <div class="col-12 text-truncate text-secondary small">
+                      <div class="progress">
+                        <div class="progress-bar" style="width: 0%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" data-valuemax="">0%</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- fuzzer job card end -->
+              </template>
+
+              <template id="reduce-job-template">
+                <!-- reduce job card begin -->
+                <div class="card container-fluid border-light mb-1 pl-2 bg-info rounded-0">
+                  <div class="row bg-white ml-0">
+                    <div class="col-12 text-truncate"><i class="material-icons md-18 align-text-top">crop</i> <span class="reduce-job-id"> </span></div>
+                    <div class="col-12 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">my_location</i> <span class="reduce-job-sut"> </span></div>
+                    <div class="col-12 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">priority_high</i> <span class="reduce-job-issue"> </span></div>
+                    <div class="col-12 text-truncate text-secondary small">
+                      <div class="progress">
+                        <div class="progress-bar" style="width: 0%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" data-valuemax="">0%</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- reduce job card end -->
+              </template>
+
+              <template id="update-job-template">
+                <!-- update job card begin -->
+                <!-- note: it seems that an update job cannot report progress -->
+                <div class="card container-fluid border-light mb-1 pl-2 bg-info rounded-0">
+                  <div class="row bg-white ml-0">
+                    <div class="col-12 text-truncate"><i class="material-icons md-18 align-text-top">update</i><span class="update-job-id"> </span></div>
+                    <div class="col-12 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">my_location</i> <span class="update-job-sut"> </span></div>
+                  </div>
+                </div>
+                <!-- update job card end -->
+              </template>
+
+              <template id="validate-job-template">
+                <!-- validate job card begin -->
+                <!-- note: it seems that a validate job cannot report progress -->
+                <!-- note: it seems that a validate job doesn't even appear in the list of jobs -->
+                <div class="card container-fluid border-light mb-1 pl-2 bg-info rounded-0">
+                  <div class="row bg-white ml-0">
+                    <div class="col-12 text-truncate"><i class="material-icons md-18 align-text-top">replay</i> <span class="validate-job-id"> </span></div>
+                    <div class="col-12 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">my_location</i> <span class="validate-job-sut"> </span></div>
+                    <div class="col-12 text-truncate text-secondary small"><i class="material-icons md-14 align-text-top">priority_high</i> <span class="validate-job-issue"> </span></div>
+                  </div>
+                </div>
+                <!-- validate job card end -->
+              </template>
+
             </div>
           </div>
         </div>
+
       </div>
-    </div>
-  </div>
+    </main>
 {% end body %}

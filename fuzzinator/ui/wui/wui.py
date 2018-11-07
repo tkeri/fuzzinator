@@ -4,10 +4,10 @@
 
 # Utility libraries
 import datetime
-import os
 import json
-import signal
 import logging
+import os
+import signal
 import time
 
 from functools import partial
@@ -17,7 +17,6 @@ from bson.objectid import ObjectId
 
 # Webserver stuff
 from tornado import websocket, web, ioloop
-from tornado.options import define, options
 
 # Fuzzinator stuff
 from fuzzinator import Controller
@@ -27,6 +26,9 @@ from .wui_listener import WuiListener
 from fuzzinator.listener import EventListener
 
 MAX_WAIT_SECONDS_BEFORE_SHUTDOWN = 3
+
+logger = logging.getLogger(__name__)
+
 
 class ObjectIdEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -58,21 +60,21 @@ class SocketHandler(websocket.WebSocketHandler):
         request = json.loads(message)
         action = request['action']
         if action == 'get_stats':
-            stats = self.controller.db.stat_snapshot(None)
-            issues = self.controller.db.all_issues()
+            self.send_message('get_stats', self.controller.db.stat_snapshot(None))
 
-            self.send_message('set_stats', stats)
         elif action == 'get_issues':
-            issues = self.controller.db.all_issues()
-
-            self.send_message('set_issues', issues)
+            self.send_message('get_issues', self.controller.db.all_issues())
 
         elif action == 'get_jobs':
-            for (ident, fuzzer, sut, cost, batch) in self.controller.iter_running_jobs():
-                self.send_message('new_fuzz_job', dict(ident=ident, fuzzer=fuzzer, sut=sut, cost=cost, batch=batch))
+           for (ident, fuzzer, sut, cost, batch) in self.controller.iter_running_jobs():
+               self.send_message('new_fuzz_job', dict(ident=ident, fuzzer=fuzzer, sut=sut, cost=cost, batch=batch))
+
+        elif action == 'get_issue':
+            print('get_issue:', request)
+            self.send_message('get_issue', self.controller.db.find_issue_by_id(request['_id']))
 
         else:
-            print('ERROR: Invalid {action} message!'.format(action=action))
+            logger.warning('ERROR: Invalid {action} message!'.format(action=action))
 
     def on_close(self):
         self.wui.unregisterWs(self)
@@ -85,7 +87,7 @@ class SocketHandler(websocket.WebSocketHandler):
         try:
             self.write_message(json.dumps(message, cls=ObjectIdEncoder))
         except Exception as e:
-            print(str(e))
+            logger.error(e)
             self.on_close()
 
 
@@ -142,22 +144,29 @@ class Wui(EventListener):
         for wsSocket in self.socket_list:
             wsSocket.send_message(action, data)
 
-    def new_fuzz_job(self, ident, fuzzer, sut, cost, batch):
-        self.send_message('new_fuzz_job', dict(ident=ident, fuzzer=fuzzer, sut=sut, cost=cost, batch=batch))
+    def new_fuzz_job(self, **kwargs):
+        self.send_message('new_fuzz_job', kwargs)
 
-    def job_progress(self, ident, progress):
-        self.send_message('job_progress', dict(ident=ident, progress=progress))
+    def new_reduce_job(self, **kwargs):
+        self.send_message('new_reduce_job', kwargs)
 
-    def remove_job(self, ident):
-        self.send_message('remove_job', dict(ident=ident))
+    def new_update_job(self, **kwargs):
+        self.send_message('new_update_job', kwargs)
 
-    def activate_job(self, ident):
-        self.send_message('activate_job', dict(ident=ident))
+    def job_progress(self, **kwargs):
+        self.send_message('job_progress', kwargs)
 
-    # TODO: use with websocket
-    ''' def new_issue(self, issue):
+    def remove_job(self, **kwargs):
+        self.send_message('remove_job', kwargs)
+
+    def activate_job(self, **kwargs):
+        self.send_message('activate_job', kwargs)
+
+    def new_issue(self, issue):
         self.send_message('new_issue', issue)
-    '''
+
+    def warning(self, msg):
+        logger.warning(msg)
 
     def process_loop(self):
         while True:
@@ -189,7 +198,7 @@ class Wui(EventListener):
                         MAX_WAIT_SECONDS_BEFORE_SHUTDOWN)
             stop_loop(time.time() + MAX_WAIT_SECONDS_BEFORE_SHUTDOWN)
 
-        logging.warning('Caught signal: %s', sig)
+        logger.warning('Caught signal: %s', sig)
         io_loop.add_callback_from_signal(shutdown)
 
 
@@ -197,7 +206,9 @@ class Wui(EventListener):
 def execute(args=None, parser=None):
     parser = build_parser(parent=parser)
     arguments = parser.parse_args(args)
-    process_args(arguments)
+    error_msg = process_args(arguments)
+    if error_msg:
+        parser.error(error_msg)
 
     port = int(config_get_with_writeback(arguments.config, 'fuzzinator.wui', 'port', '8080'))
     print('You can open wui on http://localhost:{port}'.format(port=port))
@@ -229,3 +240,4 @@ def execute(args=None, parser=None):
         os.kill(fuzz_process.pid, signal.SIGINT)
     finally:
         iol.add_callback(iol.stop)
+

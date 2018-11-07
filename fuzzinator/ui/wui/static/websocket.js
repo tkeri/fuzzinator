@@ -4,147 +4,135 @@ function startWebsocket() {
     ws.onopen = function () {
         updateContent();
     };
+
     ws.onmessage = function (evt) {
         var msg = JSON.parse(evt.data);
         var action = msg.action;
         var data = msg.data;
         switch (action) {
-            case "set_stats":
-                var stats_content = "";
+            case "get_stats":
                 Object.keys(data).forEach(function(k){
-                    stats_content += '<div class="list-group-item">\
-                            <div class="row">\
-                            <div class="col-sm issue_id">' + k + '</div>\
-                            <div class="col-sm issue_reported">' + data[k].exec + '</div>\
-                            <div class="col-sm issue_seen">' + data[k].issues + '</div>\
-                            <div class="col-sm issue_count">' + data[k].unique + '</div>\
-                            </div>\
-                            </div>';
+                    var content = document.querySelector("#stat-card-template").content;
+                    content.querySelector(".fuzzer").textContent = k;
+                    content.querySelector(".executed").textContent = data[k].exec;
+                    content.querySelector(".failed").textContent = data[k].issues;
+                    content.querySelector(".unique").textContent = data[k].unique;
+                    $("#stats").append(document.importNode(content, true));
                 });
-                $("#stats_body").html(stats_content);
                 break;
-            case "set_issues":
-                reduced_icon = "";
-                reported_icon = "";
-                var issues_content = "";
+
+            case "get_issues":
                 Object.keys(data).forEach(function(k){
-                    reported_icon = setRightIcon(data[k].reported);
-                    reduced_icon = setRightIcon(data[k].reduced);
-                    issues_content += '\
-                            <a href="/issue/' + data[k]._id + '" class="list-group-item list-group-item-action">\
-                            <div class="row">\
-                                <div class="col-sm issue_id" data-togle="tool-tip" title="' + data[k].id + '">' + data[k].id + '</div>\
-                                <div class="col-sm issue_fuzzer" data-togle="tool-tip" title="' + data[k].fuzzer + '">' + data[k].fuzzer + '</div>\
-                                <div class="col-sm issue_seen">' + data[k].first_seen + '</div>\
-                                <div class="col-sm issue_count">\
-                                    <div class="row">\
-                                        <div class="col-sm">' + data[k].count + '</div>\
-                                        <div class="col-sm">' + reduced_icon  + '</div>\
-                                        <div class="col-sm">' + reported_icon  + '</div>\
-                                    </div>\
-                                </div>\
-                            </div>\
-                            </a>';
-                });
-                $("#issues_body").html(issues_content);
+                    var content = document.querySelector("#issue-card-template").content;
+                    content.querySelector(".issue-id").textContent = data[k].id;
+                    content.querySelector(".issue-id").setAttribute("onclick", "open_issue('" + data[k]._id + "')");
+                    content.querySelector(".issue-id").setAttribute("title", data[k].id);
+                    content.querySelector(".sut-id").textContent = data[k].sut;
+                    content.querySelector(".fuzzer-id").textContent = data[k].fuzzer;
+                    content.querySelector(".date_range").textContent = data[k].first_seen + " .. " + data[k].last_seen;
+                    content.querySelector(".count").textContent = data[k].count;
+                    if (data[k].reduced)
+                        content.querySelector(".reduced").textContent = 'crop';
+                    if (data[k].reported)
+                        content.querySelector(".reported").textContent = 'link';
+                    $("#issues").append(document.importNode(content, true));
+                 });
                 break;
+
+            case "get_issue":
+                var content = document.querySelector("#issue-details-template").content;
+                content.querySelector(".issue-id").textContent = data.id;
+                content.querySelector(".issue-id").setAttribute("onclick", "open_issue('" + data._id + "')");
+                content.querySelector(".issue-id").setAttribute("title", data.id);
+                content.querySelector(".sut-id").textContent = data.sut;
+                content.querySelector(".fuzzer-id").textContent = data.fuzzer;
+                content.querySelector(".date_range").textContent = data.first_seen + " .. " + data.last_seen;
+                content.querySelector(".count").textContent = data.count;
+                if (data.reduced)
+                    content.querySelector(".reduced").textContent = 'crop';
+                if (data.reported)
+                    content.querySelector(".reported").textContent = 'link';
+
+                $("#issue").empty();
+                $("#issue").append(document.importNode(content, true));
+                break;
+
             case "new_fuzz_job":
-                if (document.getElementById(data.ident))
+                if (document.getElementById("job-" + data.ident))
                     break;
-                var job_content = "";
-                // TODO: add inactive_job to data.ident's class
-                job_content += '\
-                <table id="' + data.ident + '" class="table table-bordered">\
-                    <thead> \
-                       <tr> \
-                          <th colspan="2" align="center">Fuzz Job</th>\
-                        </tr>\
-                    </thead>\
-                    <tbody>\
-                    <tr>\
-                        <th>Fuzzer</th>\
-                        <td>' + data.fuzzer + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th>Sut</th>\
-                        <td>' + data.sut + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th>Cost</th>\
-                        <td>' + data.cost + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th>Progress</th>\
-                        <td>\
-                            <progress class="pBar" id="' + data.ident + '_progBar" value="0" max="' + data.batch + '" />\
-                        </td>\
-                    </tr>\
-                    </tbody>\
-                </table>';
-                $("#job_container").prepend(job_content);
+
+                var content = document.querySelector("#fuzz-job-template").content;
+                content.querySelector(".fuzz-job-id").textContent = data.ident;
+                content.querySelector(".fuzz-job-fuzzer").textContent = data.fuzzer;
+                content.querySelector(".fuzz-job-sut").textContent = data.sut;
+                content.querySelector(".progress-bar").setAttribute("data-maxvalue", data.batch);
+                var new_node = document.importNode(content, true);
+                new_node.querySelector('.card').id = 'job-' + data.ident;
+                $("#jobs").append(new_node);
                 break;
+
+            case "new_reduce_job":
+                var content = document.querySelector("#reduce-job-template").content;
+                content.querySelector('.card').id = 'job-' + data.ident;
+                content.querySelector(".reduce-job-id").textContent = data.ident;
+                content.querySelector(".reduce-job-sut").textContent = data.sut;
+                content.querySelector(".reduce-job-issue").textContent = data.issue_id;
+                content.querySelector(".progress-bar").setAttribute("data-maxvalue", data.size);
+                $("#jobs").append(document.importNode(content, true));
+                break;
+
+            case "new_update_job":
+                var content = document.querySelector("#update-job-template").content;
+                content.querySelector('.card').id = 'job-' + data.ident;
+                content.querySelector(".update-job-id").textContent = data.ident;
+                content.querySelector(".update-job-sut").textContent = data.sut;
+                $("#jobs").append(document.importNode(content, true));
+                break;
+
             case "job_progress":
-                $("#" + data.ident + "_progBar").attr('value', data.progress);
+                var progress = document.querySelector('#job-' + data.ident).querySelector('.progress-bar');
+                var percent = Math.round(data.progress / progress.getAttribute('data-maxvalue') * 100);
+                progress.style = "width: " + percent + "%";
+                progress.setAttribute('aria-valuenow', percent);
+                progress.textContent = percent + "%";
                 break;
-            case "remove_job":
-                $("#" + data.ident).remove();
-                break;
+
             case "activate_job":
-                $("#" + data.ident).removeClass("inactive_job");
+                var job_card = document.querySelector('#job-' + data.ident);
+                job_card.classList.replace("bg-secondary", "bg-info");
                 break;
+
+            case "remove_job":
+                $("#job-" + data.ident).remove();
+                break;
+
+            case "new_issue":
+                var content = document.querySelector("#issue-card-template").content;
+                content.querySelector(".issue-id").textContent = data.id;
+                content.querySelector(".sut-id").textContent = data.sut;
+                content.querySelector(".fuzzer-id").textContent = data.fuzzer;
+                content.querySelector(".first-seen").textContent = data.first_seen;
+                content.querySelector(".count").textContent = 1;
+                if (data.reduced)
+                    content.querySelector(".reduced").textContent = 'crop';
+                if (data.reported)
+                    content.querySelector(".reported").textContent = 'link';
+                var issue_list = document.querySelector("#issues");
+                issue_list.insertBefore(document.importNode(content, true), issue_list.childNodes[0] || null);
+                break;
+
         }
     };
 };
+
 function updateContent() {
-        var request = {
-            action: 'action'
-        };
-        request.action = 'get_issues';
-        ws.send(JSON.stringify(request));
-
-        request.action = 'get_jobs';
-        ws.send(JSON.stringify(request));
-
-        request.action = 'get_stats';
-        ws.send(JSON.stringify(request));
-};
-
-
-function iterateAttributesAndFormHTMLLabels(json_o, count=0){
-    var s = '';
-
-    if (json_o instanceof Array) {
-        json_o.forEach(function(element, index, array) {
-            s += iterateAttributesAndFormHTMLLabels(element, count);
-        });
-    } else if (typeof json_o == 'object') {
-        Object.keys(json_o).forEach(function(k){
-            if (json_o[k] !== null) {
-                s += '<b><label style="text-indent:' + count * 15 + 'px">' + k + ': </label></b><br/>';
-                s += iterateAttributesAndFormHTMLLabels(json_o[k], count + 2)
-            }
-        });
-    } else {
-        s += '<label style="text-indent:' + count * 15 + 'px"><pre>' + json_o + '</pre></label><br />';
-    }
-    return s;
-};
-
-function createContentFromJson(json_o, tag_id) {
-    var html = iterateAttributesAndFormHTMLLabels(json_o);
-    $("#" + tag_id).html(html);
-}
-
-function setRightIcon(data) {
-    if (data === null || data === false) {
-        return '<i class="far fa-times-circle"></i>';
-    }
-
-    return '<i class="far fa-check-circle"></i>';
+    ws.send(JSON.stringify({"action": 'get_issues'}));
+    ws.send(JSON.stringify({"action": 'get_jobs'}));
+    ws.send(JSON.stringify({"action": 'get_stats'}));
 };
 
 startWebsocket();
-var content_update =  setInterval(updateContent, 4000);
+//var content_update =  setInterval(updateContent, 4000);
 
 function expandAll() {
     $('.panel-collapse').collapse('show');
