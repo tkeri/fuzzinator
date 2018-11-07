@@ -4,10 +4,10 @@
     <title>Fuzzinator wui</title>
   </head>
   <body>
-    <ul>
+    <table>
        {% for item in issues %}
-         <li>{{ item['id'] }}</li>
+         <tr><td><a href="/issue/{{ item['_id'] }}">{{ item['id'] }}</a></td></tr>
        {% end %}
-     </ul>
+    </table>
   </body>
 </html>

@@ -21,8 +21,15 @@ from .wui_listener import WuiListener
 # TODO: move to fuzzinator
 define('port', default=8080, help='Run on the given port.', type=int)
 
-# TODO: test print
-import json
+
+class IssueHandler(web.RequestHandler):
+    def __init__(self, *args, **kwargs):
+        self.db = kwargs.pop('db')
+        super(IssueHandler, self).__init__(*args, **kwargs)
+
+    def get(self, issue_id):
+        issue = self.db.find_issue_by_id(issue_id)
+        self.render('issue.html', issue=issue)
 
 # route to index.html
 class IndexHandler(web.RequestHandler):
@@ -33,26 +40,22 @@ class IndexHandler(web.RequestHandler):
 
     def get(self):
         issues = self.db.all_issues()
-        print(issues[0].keys())
-        for key, value in issues[0].items():
-            print(key, type(value))
-            if isinstance(value, dict):
-                print ("--> ", value.items())
-        print(str(issues[0]['_id']))
-        self.render('index.html', issues=self.db.all_issues())
+        self.render('index.html',
+                    issues=issues)
 
-# TODO(tkeri): check debug; now 'settings' is unused
 
 class Wui(object):
 
     def __init__(self, controller, settings):
         self.app = web.Application([
                     (r'/', IndexHandler, dict(db=controller.db)),
+                    (r'/issue/([0-9a-f]{24})', IssueHandler, dict(db=controller.db)),
                 ], **settings)
         self.app.listen(options.port)
 
     def new_fuzz_job(self, ident, fuzzer):
         pass
+
 
 def execute(args=None, parser=None):
     parser = build_parser(parent=parser)
@@ -62,7 +65,7 @@ def execute(args=None, parser=None):
     settings = dict(
         template_path = os.path.join(os.path.dirname(__file__), 'templates'),
         static_path = os.path.join(os.path.dirname(__file__), 'static'),
-        debug=True
+        debug = True
     )
 
     controller = Controller(config=arguments.config)
