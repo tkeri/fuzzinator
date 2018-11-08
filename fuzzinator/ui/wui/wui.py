@@ -129,7 +129,19 @@ class IssueHandler(web.RequestHandler):
 
     def get(self, issue_id):
         issue = self.db.find_issue_by_id(issue_id)
-        formatter = config_get_callable(self.config, 'sut.' + issue['sut'], ['wui_formatter', 'formatter'])[0] or JsonFormatter
+        formatters = [
+                ('sut.' + issue['sut'], ['wui_formatter', 'formatter']),
+                ('fuzzinator.custom', ['default_wui_formatter', 'formatter'])
+        ]
+
+        for item in formatters:
+            formatter = config_get_callable(self.config, item[0], item[1])[0]
+            if formatter:
+               break
+
+        if not formatter:
+            formatter = JsonFormatter
+
         issue_json = json.dumps(issue, cls=ObjectIdEncoder)
         issue_body = formatter(issue=issue, format='long')
         self.render('issue.html', active_page='issue', issue=issue, issue_json=issue_json, issue_body=issue_body)
