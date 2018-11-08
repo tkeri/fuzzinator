@@ -21,9 +21,14 @@ function startWebsocket() {
         var data = msg.data;
         switch (action) {
             case "get_stats":
+                var prev_stats = document.querySelectorAll('.stats-entry');
+                if (prev_stats) {
+                    prev_stats.forEach(function(stat_entry) { stat_entry.remove(); });
+                }
                 Object.keys(data).forEach(function(k){
                     var content = document.querySelector("#stat-card-template").content.cloneNode(true);
                     content.firstElementChild.classList.add(k);
+                    content.firstElementChild.classList.add('stats-entry');
                     content.querySelector(".fuzzer").textContent = k;
                     content.querySelector(".executed").textContent = data[k].exec;
                     content.querySelector(".failed").textContent = data[k].issues;
@@ -181,6 +186,11 @@ function startWebsocket() {
                 progress.style = "width: " + percent + "%";
                 progress.setAttribute('aria-valuenow', percent);
                 progress.textContent = percent + "%";
+                job.classList.toggle('progress_tick');
+
+                var progress_text = job.querySelector('.progress-text');
+                progress_text.textContent = percent + '%';
+
                 break;
 
             case "activate_job":
