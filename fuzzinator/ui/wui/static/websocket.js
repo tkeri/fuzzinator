@@ -38,6 +38,9 @@ function startWebsocket() {
                 break;
 
             case "update_fuzz_stat":
+                if (active_page != 'stats') {
+                   break;
+                }
                 Object.keys(data).forEach(function(k){
                     var content = document.querySelector("." + k);
                     content.querySelector(".executed").textContent = data[k].exec;
@@ -185,7 +188,6 @@ function startWebsocket() {
                 var percent = Math.round(data.progress / progress.getAttribute('data-maxvalue') * 100);
                 progress.style = "width: " + percent + "%";
                 progress.setAttribute('aria-valuenow', percent);
-                progress.textContent = percent + "%";
                 job.classList.toggle('progress_tick');
 
                 var progress_text = job.querySelector('.progress-text');
