@@ -216,12 +216,26 @@ function updateContent() {
     }
 };
 
-startWebsocket();
-
 function paginationIssues(page) {
     document.querySelector(".paginations-entry.active").classList.remove("active");
     document.querySelector("#page_" + page).classList.add("active");
     ws.send(JSON.stringify({"action": 'get_issues', "data": page}));
     console.log(page);
 };
+
+function websocket_toggle_connection() {
+    console.log("state: ");
+    console.log(ws.readyState);
+    if (ws.readyState == WebSocket.OPEN) {
+        ws.close();
+    } else {
+        startWebsocket();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    startWebsocket();
+    var status_dot = document.querySelector('.websocket-status');
+    status_dot.addEventListener('click', websocket_toggle_connection);
+});
 
