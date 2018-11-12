@@ -100,28 +100,6 @@ function startWebsocket() {
                 } while (i < counter);
                 break;
 
-            case "get_issue":
-                var content = document.querySelector("#issue-details-template").content.cloneNode(true);
-                content.querySelector(".issue-id").textContent = data.id;
-                content.querySelector(".sut-id").textContent = data.sut;
-                content.querySelector(".fuzzer-id").textContent = data.fuzzer;
-
-                if ('first_seen' in data && 'last_seen' in data)
-                    content.querySelector(".date_range").textContent = data.first_seen + " .. " + data.last_seen;
-
-                if ('count' in data)
-                    content.querySelector(".count").textContent = data.count;
-
-                if (data.reduced)
-                    content.querySelector(".reduced").textContent = 'crop';
-
-                if (data.reported)
-                    content.querySelector(".reported").textContent = 'link';
-
-                $("#issue").empty();
-                $("#issue").append(document.importNode(content, true));
-                break;
-
             case "new_fuzz_job":
                 if (document.getElementById("job-" + data.ident))
                     break;

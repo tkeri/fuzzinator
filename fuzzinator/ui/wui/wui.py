@@ -81,11 +81,6 @@ class SocketHandler(websocket.WebSocketHandler):
             for job in dict(self.wui.jobs).values():
                 self.send_message('new_{type}_job'.format(type=job['type']), job)
 
-        elif action == 'get_issue':
-            issue_dict = self.controller.db.find_issue_by_id(request['_id'])
-
-            self.send_message('get_issue', issue_dict)
-
         elif action == 'delete_issue':
             self.controller.db.remove_issue_by_id(request['_id'])
 
