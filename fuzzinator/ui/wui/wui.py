@@ -289,18 +289,15 @@ def execute(args=None, parser=None):
     iol = ioloop.IOLoop.instance()
     iolcb = ioloop.PeriodicCallback(wui.process_loop, 1000)
 
-    wui.registerSignals()
-
     try:
         fuzz_process.start()
         iolcb.start()
         iol.start()
     except KeyboardInterrupt:
-        pass
+        Controller.kill_process_tree(fuzz_process.pid, kill_root=True)
     except Exception:
-        os.kill(fuzz_process.pid, signal.SIGINT)
-    else:
-        os.kill(fuzz_process.pid, signal.SIGINT)
+        Controller.kill_process_tree(fuzz_process.pid, kill_root=True)
     finally:
+        iolcb.stop()
         iol.add_callback(iol.stop)
 
